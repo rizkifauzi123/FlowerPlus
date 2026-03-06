@@ -1,0 +1,766 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ==============================
+   RESET & ROOT
+============================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==============================
+   MAIN CONTAINER
+============================== */
+.ra-root {
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: #EDF2F7;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.ra-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 24px;
+}
+
+/* ==============================
+   HEADER
+============================== */
+.ra-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.ra-header-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f2b46;
+}
+
+.ra-header-sub {
+  font-size: 13px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.ra-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ==============================
+   DROPDOWN
+============================== */
+.ra-dropdown {
+  position: relative;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #0f172a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+  max-width: 260px;
+  justify-content: space-between;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+
+.ra-dropdown:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.ra-dropdown-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.ra-chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  color: #64748b;
+}
+
+.ra-chevron.open {
+  transform: rotate(180deg);
+}
+
+.ra-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8edf4;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  padding: 6px;
+  z-index: 200;
+  animation: dropdownFadeIn 0.15s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ra-dropdown-item {
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: #334155;
+}
+
+.ra-dropdown-item:hover {
+  background: #f1f5f9;
+}
+
+.ra-dropdown-item.active {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* ==============================
+   EXPORT
+============================== */
+.ra-export-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ra-export-select {
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  font-size: 13px;
+  font-family: inherit;
+  color: #334155;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+}
+
+.ra-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.ra-export-btn:hover {
+  background: #f1f5f9;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* ==============================
+   SUMMARY GRID
+============================== */
+.ra-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ra-summary-card {
+  background: #fff;
+  padding: 20px 22px;
+  border-radius: 14px;
+  border: 1px solid #e8edf4;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: box-shadow 0.2s;
+}
+
+.ra-summary-card:hover {
+  box-shadow: 0 6px 24px rgba(15, 43, 70, 0.08);
+}
+
+.ra-summary-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.ra-summary-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f2b46;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+/* ==============================
+   ICON BOX
+============================== */
+.ra-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ra-icon-blue   { background: #dbeafe; color: #2563eb; }
+.ra-icon-green  { background: #dcfce7; color: #16a34a; }
+.ra-icon-yellow { background: #fef9c3; color: #ca8a04; }
+.ra-icon-purple { background: #ede9fe; color: #7c3aed; }
+
+/* ==============================
+   CHART LAYOUTS
+============================== */
+.ra-chart-main {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ra-chart-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ==============================
+   CARD
+============================== */
+.ra-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px;
+  border: 1px solid #e8edf4;
+  transition: box-shadow 0.2s;
+}
+
+.ra-card:hover {
+  box-shadow: 0 6px 24px rgba(15, 43, 70, 0.06);
+}
+
+.ra-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f2b46;
+  margin-bottom: 18px;
+  letter-spacing: -0.1px;
+}
+
+/* ==============================
+   CUSTOM TOOLTIP
+============================== */
+.ra-custom-tooltip {
+  background: #0D1B2A;
+  border-radius: 10px;
+  padding: 10px 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  min-width: 160px;
+}
+
+.ra-tooltip-label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.ra-tooltip-value {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 700;
+}
+
+/* ==============================
+   DIVIDER
+============================== */
+.ra-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 14px 0;
+}
+
+/* ==============================
+   STATUS LEGEND
+============================== */
+.ra-legend-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 13px;
+}
+
+.ra-legend-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.ra-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ra-legend-value {
+  font-weight: 600;
+  color: #0f2b46;
+  font-size: 13px;
+}
+
+/* ==============================
+   TOP CUSTOMERS
+============================== */
+.ra-customer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ra-customer-row:last-child {
+  margin-bottom: 0;
+}
+
+.ra-rank-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.ra-rank-1     { background: #f59e0b; }
+.ra-rank-2     { background: #1e4976; }
+.ra-rank-3     { background: #64748b; }
+.ra-rank-4     { background: #94a3b8; }
+.ra-rank-5     { background: #b0bec5; }
+.ra-rank-other { background: #e2e8f0; color: #334155; }
+
+.ra-customer-info    { flex: 1; min-width: 0; }
+
+.ra-customer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+
+.ra-customer-name {
+  font-size: 13px;
+  color: #0f2b46;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ra-customer-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f2b46;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ra-bar-track {
+  width: 100%;
+  height: 5px;
+  background: #f1f5f9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ra-bar-fill {
+  height: 100%;
+  background: #1e4976;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* ==============================
+   EMPTY STATE
+============================== */
+.ra-empty {
+  color: #94a3b8;
+  font-size: 13px;
+  padding: 20px 0;
+}
+
+/* ==============================
+   CUSTOM DATE MODAL — OVERLAY
+============================== */
+.ra-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 27, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+  animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ==============================
+   CUSTOM DATE MODAL — CARD
+============================== */
+.ra-modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 380px;
+  box-shadow: 0 24px 64px rgba(15, 27, 42, 0.2);
+  animation: modalSlideUp 0.22s ease;
+  overflow: hidden;
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ra-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 22px 22px 0;
+  position: relative;
+}
+
+.ra-modal-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #dbeafe;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ra-modal-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f2b46;
+  margin-top: 2px;
+}
+
+.ra-modal-subtitle {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
+.ra-modal-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.ra-modal-close:hover {
+  background: #e2e8f0;
+}
+
+/* ==============================
+   MODAL BODY — DATE FIELDS
+============================== */
+.ra-modal-body {
+  padding: 20px 22px 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ra-date-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ra-date-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.ra-date-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  font-size: 13px;
+  font-family: inherit;
+  color: #0f172a;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.ra-date-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  background: #fff;
+}
+
+.ra-date-preview {
+  font-size: 11px;
+  color: #2563eb;
+  font-weight: 500;
+  padding: 0 2px;
+  min-height: 16px;
+}
+
+/* ==============================
+   SEPARATOR
+============================== */
+.ra-date-separator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-top: 20px;
+  flex-shrink: 0;
+}
+
+.ra-separator-line {
+  width: 1px;
+  height: 14px;
+  background: #e2e8f0;
+}
+
+.ra-separator-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* ==============================
+   RANGE PREVIEW BADGE
+============================== */
+.ra-range-preview {
+  margin: 14px 22px 0;
+  padding: 10px 14px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #1d4ed8;
+}
+
+/* ==============================
+   MODAL FOOTER
+============================== */
+.ra-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 18px 22px 22px;
+}
+
+.ra-btn-cancel {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ra-btn-cancel:hover {
+  background: #f1f5f9;
+}
+
+.ra-btn-apply {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  background: #0f2b46;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.ra-btn-apply:hover:not(:disabled) {
+  background: #1e3f62;
+}
+
+.ra-btn-apply:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ra-btn-apply:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ==============================
+   RESPONSIVE — TABLET (≤1100px)
+============================== */
+@media (max-width: 1100px) {
+  .ra-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ra-chart-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==============================
+   RESPONSIVE — MOBILE (≤768px)
+============================== */
+@media (max-width: 768px) {
+  .ra-container {
+    padding: 16px;
+  }
+
+  .ra-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .ra-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .ra-dropdown {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .ra-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .ra-summary-value {
+    font-size: 18px;
+  }
+
+  .ra-chart-bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-card {
+    padding: 16px;
+  }
+
+  .ra-modal {
+    width: calc(100vw - 32px);
+    max-width: 380px;
+  }
+
+  .ra-modal-body {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .ra-date-separator {
+    flex-direction: row;
+    padding-top: 0;
+    padding: 8px 0;
+    width: 100%;
+  }
+
+  .ra-separator-line {
+    width: 100%;
+    height: 1px;
+    flex: 1;
+  }
+}
+
+/* ==============================
+   RESPONSIVE — SMALL MOBILE (≤420px)
+============================== */
+@media (max-width: 420px) {
+  .ra-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ra-summary-value {
+    font-size: 16px;
+  }
+}

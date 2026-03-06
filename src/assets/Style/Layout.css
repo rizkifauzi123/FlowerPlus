@@ -1,0 +1,68 @@
+.app-layout {
+  display: flex;
+  width: 100%;
+}
+
+/* Default sidebar width mengikuti CSS variable */
+.main-wrapper {
+  margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.35s ease, width 0.35s ease;
+}
+
+/* Ketika sidebar collapsed */
+.main-wrapper.collapsed {
+  margin-left: var(--sidebar-collapsed-width);
+  width: calc(100% - var(--sidebar-collapsed-width));
+}
+
+/* Main content padding supaya tidak mepet */
+.main-content {
+  padding: 0;
+  background: #f6f9fc;
+  min-height: calc(100vh - 66px); /* sesuaikan tinggi navbar */
+}
+
+/* Tablet */
+@media (max-width: 1023px) {
+  .main-wrapper {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+  }
+
+  .main-wrapper.collapsed {
+    margin-left: var(--sidebar-collapsed-width);
+    width: calc(100% - var(--sidebar-collapsed-width));
+  }
+
+  .main-content {
+    padding: 20px 20px;
+  }
+}
+
+/* Mobile — sidebar jadi drawer */
+@media (max-width: 767px) {
+  .main-wrapper,
+  .main-wrapper.collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .main-content {
+    padding: 16px 14px;
+    min-height: calc(100vh - 56px); /* navbar mobile lebih kecil */
+  }
+   .app-layout {
+    display: block; /* ❗ hentikan flex di mobile */
+  }
+}
+
+/* Small mobile */
+@media (max-width: 400px) {
+  .main-content {
+    padding: 12px 10px;
+  }
+}

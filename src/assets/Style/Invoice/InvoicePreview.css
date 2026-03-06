@@ -1,0 +1,350 @@
+/* ============================= */
+/* WRAPPER — scroll horizontal di mobile, invoice tidak berubah */
+/* ============================= */
+
+.invoice-preview-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================= */
+/* PAPER — SELALU 210mm, tidak berubah di mobile */
+/* ============================= */
+
+.invoice-paper {
+  width: 210mm;
+  min-width: 210mm;
+  background: #ffffff;
+  padding: 40px;
+  margin: 0 auto 20px auto;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+  color: #1f2937;
+}
+
+/* ============================= */
+/* HEADER */
+/* ============================= */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.logo {
+  height: 120px;
+  object-fit: contain;
+}
+
+.header h1 {
+  font-size: 48px;
+  font-weight: 700;
+  color: #2c4775;
+}
+
+/* ============================= */
+/* META */
+/* ============================= */
+
+.meta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.meta div {
+  background: #3f5f9b;
+  color: white;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ============================= */
+/* CUSTOMER */
+/* ============================= */
+
+.customer-box {
+  background: #3f5f9b;
+  color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.customer-box p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* ============================= */
+/* TABLE */
+/* ============================= */
+
+.invoice-paper table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 25px;
+}
+
+.invoice-paper th {
+  background: #2c4775;
+  color: white;
+  padding: 10px;
+  border: 1px solid #000;
+  font-size: 13px;
+  text-align: center;
+}
+
+.invoice-paper td {
+  padding: 10px;
+  border: 1px solid #000;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.invoice-paper td:nth-child(1),
+.invoice-paper td:nth-child(3),
+.invoice-paper td:nth-child(4),
+.invoice-paper td:nth-child(5) {
+  text-align: center;
+}
+
+/* Hilangkan border 3 kolom kiri di baris total */
+.grand-total-row td:nth-child(1),
+.grand-total-row td:nth-child(2),
+.grand-total-row td:nth-child(3) {
+  border: none !important;
+  background: transparent;
+}
+
+/* ============================= */
+/* TOTAL ROW */
+/* ============================= */
+
+.grand-total-row td {
+  padding: 10px;
+}
+
+.total-label {
+  background: #3f5f9b;
+  color: white !important;
+  font-weight: 600;
+  text-align: center;
+}
+
+.total-value {
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ============================= */
+/* IMAGE GRID */
+/* ============================= */
+
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.item-image {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ============================= */
+/* PAYMENT */
+/* ============================= */
+
+.payment {
+  margin-top: 30px;
+}
+
+.payment h4 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.payment h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+/* ============================= */
+/* FOOTER */
+/* ============================= */
+
+.footer {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #2c4775 !important;
+  gap: 150px;
+}
+
+.footer div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-icon {
+  color: #2c4775 !important;
+  font-size: 18px;
+}
+
+/* ============================= */
+/* ACTION BUTTONS                */
+/* ============================= */
+
+.invoice-action {
+  width: 210mm;
+  margin: 0 auto 48px auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+}
+
+.ia-btn-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Base button */
+.ia-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-family: 'Plus Jakarta Sans', "Segoe UI", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+}
+
+.ia-btn svg {
+  flex-shrink: 0;
+}
+
+.ia-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Back button — outlined */
+.ia-btn-back {
+  background: #ffffff;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(15, 43, 70, 0.06);
+}
+
+.ia-btn-back:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 43, 70, 0.10);
+}
+
+/* Save button — navy solid */
+.ia-btn-save {
+  background: #2c4775;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(44, 71, 117, 0.28);
+}
+
+.ia-btn-save:hover {
+  background: #3a5a94;
+  box-shadow: 0 6px 20px rgba(44, 71, 117, 0.38);
+  transform: translateY(-1px);
+}
+
+/* Download button — gold gradient */
+.ia-btn-download {
+  background: linear-gradient(135deg, #f5c518, #e6b800);
+  color: #0b2239;
+  box-shadow:
+    0 4px 14px rgba(230, 184, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.ia-btn-download:hover {
+  background: linear-gradient(135deg, #fcd34d, #f5c518);
+  box-shadow:
+    0 6px 22px rgba(230, 184, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+/* Switch button — teal outline */
+.ia-btn-switch {
+  background: #ffffff;
+  color: #0f766e;
+  border: 1.5px solid #99f6e4;
+  box-shadow: 0 1px 4px rgba(15, 118, 110, 0.08);
+}
+
+.ia-btn-switch:hover {
+  background: #f0fdfa;
+  border-color: #2dd4bf;
+  color: #0f766e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15);
+}
+
+/* ============================= */
+/* RESPONSIVE — HANYA BUTTONS    */
+/* Invoice paper tidak berubah   */
+/* ============================= */
+
+@media (max-width: 960px) {
+  .invoice-action {
+    width: 100%;
+    padding: 16px 24px 0;
+    box-sizing: border-box;
+    margin-bottom: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .invoice-action {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 0 14px;
+    margin-bottom: 28px;
+  }
+
+  .ia-btn-right {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ia-btn {
+    width: 100%;
+    height: 46px;
+    justify-content: center;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+}

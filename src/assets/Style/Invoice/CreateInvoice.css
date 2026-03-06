@@ -1,0 +1,626 @@
+/* =============================================================
+   RESET
+   ============================================================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =============================================================
+   LAYOUT — OVERLAY & CARD
+   ============================================================= */
+
+.ci-overlay {
+  min-height: 100vh;
+  padding: 40px 16px 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #f1f3f6;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(30, 58, 95, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(30, 58, 95, 0.03) 0%, transparent 50%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.ci-card {
+  width: 100%;
+  max-width: 900px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 20px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 20px 60px rgba(0, 0, 0, 0.07);
+}
+
+
+/* =============================================================
+   HEADER
+   ============================================================= */
+
+.ci-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 26px 36px;
+  background: linear-gradient(to right, #fafbfc, #f6f8fa);
+  border-bottom: 1px solid #eaecf0;
+}
+
+.ci-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 36px;
+  right: 36px;
+  height: 1px;
+  background: linear-gradient(to right, #1e3a5f33, transparent);
+}
+
+.ci-header-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #1e3a5f;
+  border-radius: 11px;
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.25);
+}
+
+.ci-header-icon svg { color: #ffffff; }
+
+.ci-header-title h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f1f2e;
+  letter-spacing: -0.2px;
+}
+
+.ci-header-title p {
+  margin-top: 2px;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: #8a9ab0;
+}
+
+
+/* =============================================================
+   BODY
+   ============================================================= */
+
+.ci-body { padding: 32px 36px; }
+
+
+/* Section label */
+
+.ci-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #1e3a5f;
+}
+
+.ci-section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, #dde3ea, transparent);
+}
+
+
+/* Meta grid */
+
+.ci-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.ci-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ci-field label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #3d5269;
+  letter-spacing: 0.2px;
+}
+
+
+/* Divider */
+
+.ci-divider {
+  border: none;
+  border-top: 1.5px solid #eaecf0;
+  margin: 0 0 28px;
+}
+
+
+/* =============================================================
+   INPUTS
+   ============================================================= */
+
+.ci-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #0f1f2e;
+  background: #fdfdfe;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.ci-input:focus {
+  background: #fff;
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 3.5px rgba(30, 58, 95, 0.09);
+}
+
+.ci-input::placeholder { color: #c0cad6; }
+
+input[type="date"].ci-input { color: #0f1f2e; }
+
+
+/* Select */
+
+select.ci-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-color: #fdfdfe;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23a0b4c8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  background-size: 15px;
+}
+
+select.ci-input:focus {
+  background-color: #fff;
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 3.5px rgba(30, 58, 95, 0.09);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231e3a5f' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  background-size: 15px;
+}
+
+select.ci-input:has(option[value=""]:checked) { color: #c0cad6; }
+select.ci-input option[value=""] { color: #c0cad6; }
+select.ci-input option { color: #0f1f2e; background: #fff; }
+
+
+/* =============================================================
+   ITEMS TABLE
+   ============================================================= */
+
+.ci-items-header {
+  display: grid;
+  grid-template-columns: 2.4fr 0.75fr 1.1fr 1fr 36px;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.ci-items-header span {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: #8a9ab0;
+}
+
+.ci-item-row {
+  display: grid;
+  grid-template-columns: 2.4fr 0.75fr 1.1fr 1fr 36px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: #fafbfc;
+  border: 1px solid #edf0f4;
+  border-radius: 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.ci-item-row:hover {
+  background: #f7f9fb;
+  border-color: #d4dbe6;
+}
+
+
+/* Upload */
+
+.ci-upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+}
+
+.ci-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 38px;
+  padding: 0 12px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #5a7290;
+  background: #f8fafc;
+  border: 1.5px dashed #c5d0dc;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, color 0.18s;
+}
+
+.ci-upload-btn:hover {
+  color: #1e3a5f;
+  background: #eef3f8;
+  border-color: #1e3a5f;
+}
+
+.ci-image-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #f0f4f8;
+  border: 1.5px solid #dbe3ef;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.18s;
+}
+
+.ci-image-preview:hover { border-color: #1e3a5f; }
+.ci-image-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+.ci-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: #c0cad6;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ci-remove-btn:hover {
+  color: #e53e3e;
+  background: #fff0f0;
+}
+
+.ci-add-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  padding: 10px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #5a7290;
+  background: transparent;
+  border: 1.5px dashed #c5d0dc;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+
+.ci-add-item:hover {
+  color: #1e3a5f;
+  background: #f0f5fb;
+  border-color: #1e3a5f;
+}
+
+
+/* =============================================================
+   TOTAL BOX
+   ============================================================= */
+
+.ci-total-box {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  margin-top: 32px;
+  padding: 22px 28px;
+  background: linear-gradient(135deg, #0f1f2e 0%, #1e3a5f 100%);
+  border-radius: 14px;
+}
+
+.ci-total-box::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ci-total-box::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 10%;
+  width: 160px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ci-total-box .label {
+  position: relative;
+  z-index: 1;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.3px;
+}
+
+.ci-total-box .amount {
+  position: relative;
+  z-index: 1;
+  font-size: 26px;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+
+/* =============================================================
+   FOOTER
+   ============================================================= */
+
+.ci-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 36px;
+  background: #fafbfc;
+  border-top: 1px solid #eaecf0;
+}
+
+.ci-btn-cancel {
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #4a5f72;
+  background: #ffffff;
+  border: 1.5px solid #dde3ea;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, color 0.18s;
+}
+
+.ci-btn-cancel:hover {
+  color: #1e3a5f;
+  background: #f3f5f8;
+  border-color: #a0b0c0;
+}
+
+.ci-btn-create {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f1f2e, #1e3a5f);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(30, 58, 95, 0.3);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.ci-btn-create:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 8px 24px rgba(30, 58, 95, 0.4);
+}
+
+.ci-btn-create:active { transform: translateY(0); }
+
+
+/* =============================================================
+   BANK CUSTOM DROPDOWN
+   ============================================================= */
+
+.ci-bank-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.ci-bank-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 13px;
+  font-size: 13.5px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #c0cad6;
+  background: #fdfdfe;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.ci-bank-trigger.has-value { color: #0f1f2e; }
+
+.ci-bank-trigger:hover {
+  background: #fafbfc;
+  border-color: #c8d4e0;
+}
+
+.ci-bank-trigger.open {
+  background: #fff;
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 3.5px rgba(30, 58, 95, 0.09);
+}
+
+.ci-bank-chevron {
+  flex-shrink: 0;
+  color: #a0b4c8;
+  transition: transform 0.2s ease, color 0.2s;
+}
+
+.ci-bank-chevron.rotated {
+  transform: rotate(180deg);
+  color: #1e3a5f;
+}
+
+.ci-bank-menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  z-index: 500;
+  padding: 5px;
+  background: #ffffff;
+  border: 1.5px solid #e4ecf4;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 8px rgba(15, 40, 70, 0.07),
+    0 16px 40px rgba(15, 40, 70, 0.12);
+  animation: ciBankFade 0.15s ease;
+}
+
+@keyframes ciBankFade {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ci-bank-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #334155;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.ci-bank-option:hover {
+  background: #f3f7fb;
+  color: #0f1f2e;
+}
+
+.ci-bank-option.selected {
+  background: #eef3f9;
+  color: #1e3a5f;
+  font-weight: 700;
+}
+
+.ci-bank-option.selected:hover { background: #e4edf7; }
+
+.ci-bank-check {
+  flex-shrink: 0;
+  color: #1e3a5f;
+}
+
+
+/* =============================================================
+   RESPONSIVE
+   ============================================================= */
+
+@media (max-width: 900px) {
+  .ci-meta-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .ci-overlay { padding: 20px 12px 40px; }
+  .ci-header  { padding: 20px 24px; }
+  .ci-body    { padding: 22px 24px; }
+  .ci-footer  { padding: 16px 24px; }
+
+  .ci-meta-grid { grid-template-columns: 1fr 1fr; }
+  .ci-meta-grid .ci-field:first-child { grid-column: 1 / -1; }
+
+  .ci-items-header { display: none; }
+
+  .ci-item-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 14px;
+    background: #f8fafc;
+    border: 1.5px solid #e8edf2;
+    border-radius: 12px;
+  }
+
+  .ci-item-row > *:first-child { grid-column: 1 / -1; }
+  .ci-item-row .ci-remove-btn  { grid-column: 2; grid-row: 1; justify-self: end; align-self: start; margin-top: -4px; }
+  .ci-upload-wrapper            { grid-column: 1 / -1; }
+
+  .ci-total-box .amount { font-size: 20px; }
+}
+
+@media (max-width: 480px) {
+  .ci-meta-grid { grid-template-columns: 1fr; }
+  .ci-meta-grid .ci-field:first-child { grid-column: 1; }
+
+  .ci-item-row { grid-template-columns: 1fr; }
+  .ci-item-row .ci-remove-btn { grid-column: 1; grid-row: auto; justify-self: start; }
+
+  .ci-footer { flex-direction: column-reverse; }
+  .ci-btn-cancel,
+  .ci-btn-create { width: 100%; justify-content: center; }
+
+  .ci-total-box { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .ci-total-box .amount { font-size: 22px; }
+}
