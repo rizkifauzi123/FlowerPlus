@@ -1,0 +1,331 @@
+/* ========================
+   IMPORTS
+======================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ========================
+   RECENT INVOICE CARD
+======================== */
+
+.recent-card {
+  margin-top: 24px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px 26px;
+  box-shadow:
+    0 1px 0 rgba(15, 43, 70, 0.04),
+    0 6px 24px rgba(15, 43, 70, 0.06);
+  border: 1px solid rgba(15, 43, 70, 0.05);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ========================
+   HEADER
+======================== */
+
+.recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(15, 43, 70, 0.06);
+}
+
+.recent-header h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0b2239;
+  letter-spacing: -0.2px;
+}
+
+.recent-header p {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #7a94ab;
+  margin: 0;
+}
+
+.view-all {
+  background: #f0f6fb;
+  border: 1px solid rgba(15, 43, 70, 0.08);
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #1a6fa0;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+}
+
+.view-all:hover {
+  background: #e0eff8;
+  border-color: rgba(26, 111, 160, 0.25);
+  color: #0f5a87;
+}
+
+/* ========================
+   LIST
+======================== */
+
+.invoice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+
+.invoice-paper {
+  page-break-after: always;
+}
+
+.invoice-paper:last-child {
+  page-break-after: auto;
+}
+
+/* ========================
+   ITEM
+======================== */
+
+.invoice-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 14px;
+  border-radius: 13px;
+  transition: background 0.18s ease;
+  cursor: default;
+}
+
+.invoice-item:hover {
+  background: #f4f8fb;
+}
+
+/* Subtle divider between items */
+.invoice-item + .invoice-item {
+  border-top: 1px solid rgba(15, 43, 70, 0.04);
+}
+
+.invoice-item:hover + .invoice-item {
+  border-top-color: transparent;
+}
+
+/* ========================
+   LEFT
+======================== */
+
+.invoice-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.invoice-avatar {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 12px;
+  background: linear-gradient(140deg, #1a6fa0, #0f2d4a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ffffff;
+  letter-spacing: 0;
+  box-shadow: 0 3px 10px rgba(15, 43, 70, 0.18);
+}
+
+.invoice-left h4 {
+  margin: 0 0 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b2239;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  letter-spacing: -0.1px;
+}
+
+.invoice-left span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ab2c6;
+  letter-spacing: 0.1px;
+}
+
+/* ========================
+   RIGHT
+======================== */
+
+.invoice-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.invoice-amount {
+  text-align: right;
+}
+
+.invoice-amount strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0b2239;
+  letter-spacing: -0.2px;
+  margin-bottom: 2px;
+}
+
+.invoice-amount span {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #9ab2c6;
+}
+
+/* ========================
+   BADGE
+======================== */
+
+.badge {
+  padding: 5px 13px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  min-width: 68px;
+  text-align: center;
+}
+
+.badge.paid {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+}
+
+.badge.unpaid {
+  background: rgba(217, 119, 6, 0.1);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+.badge.overdue {
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+  border: 1px solid rgba(220, 38, 38, 0.12);
+}
+
+/* ========================
+   RESPONSIVE — TABLET (768px – 1023px)
+======================== */
+
+@media (max-width: 1023px) {
+  .recent-card {
+    padding: 24px 20px;
+  }
+
+  .invoice-left h4 {
+    max-width: 160px;
+  }
+
+  .invoice-right {
+    gap: 14px;
+  }
+}
+
+/* ========================
+   RESPONSIVE — MOBILE (< 768px)
+======================== */
+
+@media (max-width: 767px) {
+  .recent-card {
+    padding: 20px 16px;
+    border-radius: 16px;
+    margin-top: 16px;
+  }
+
+  .recent-header {
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+  }
+
+  .recent-header h3 {
+    font-size: 15px;
+  }
+
+  .view-all {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+
+  .invoice-item {
+    padding: 11px 10px;
+    border-radius: 11px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .invoice-left {
+    gap: 11px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .invoice-avatar {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .invoice-left h4 {
+    font-size: 13.5px;
+    max-width: 140px;
+  }
+
+  .invoice-right {
+    gap: 10px;
+    width: 100%;
+    justify-content: space-between;
+    padding-left: 49px; /* align with text after avatar */
+  }
+
+  .invoice-amount strong {
+    font-size: 13.5px;
+  }
+
+  .invoice-amount span {
+    font-size: 11px;
+  }
+
+  .badge {
+    font-size: 11.5px;
+    padding: 4px 11px;
+    min-width: 60px;
+  }
+}
+
+/* ========================
+   VERY SMALL (< 420px)
+======================== */
+
+@media (max-width: 420px) {
+  .invoice-left h4 {
+    max-width: 110px;
+  }
+
+  .invoice-right {
+    padding-left: 49px;
+  }
+}

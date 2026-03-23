@@ -1,0 +1,1100 @@
+/* ============================= */
+/* WRAPPER                       */
+/* ============================= */
+.invoice-preview-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #e5e7eb;
+  padding: 32px 0;
+  min-height: 100vh;
+}
+
+/* ============================= */
+/* PAPER — A4 (base)             */
+/* ============================= */
+.invoice-paper {
+  width: 210mm;
+  min-width: 210mm;
+  background: #ffffff;
+  padding: 60px 36px 28px 36px;
+  margin: 0 auto 20px auto;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #1f2937;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.12),
+    0 4px 16px rgba(0,0,0,0.10),
+    0 8px 32px rgba(0,0,0,0.08);
+}
+
+/* ============================= */
+/* A4 — fixed height sesuai A4   */
+/* ============================= */
+.invoice-paper-scalable {
+  width: 210mm;
+  min-width: 210mm;
+  height: 297mm;
+  min-height: 297mm;
+  max-height: 297mm;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+/* ============================= */
+/* A4 INNER — flex column full   */
+/* ============================= */
+.inv-a4-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 60px 36px 28px 36px;
+  box-sizing: border-box;
+}
+
+.inv-a4-inner .inv-header,
+.inv-a4-inner .inv-customer,
+.inv-a4-inner .inv-table,
+.inv-a4-inner .inv-page-indicator {
+  flex-shrink: 0;
+}
+
+.inv-a4-inner .inv-table {
+  margin-bottom: 0;
+}
+
+/* A4: ada gambar — payment ikut konten */
+.inv-a4-inner .inv-payment-row-with-img {
+  margin-top: 24px;
+  flex-shrink: 0;
+}
+
+/* A4: tanpa gambar — payment didorong ke bawah */
+.inv-a4-inner .inv-payment-row-no-img {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+/* fallback jika class tidak ditambahkan */
+.inv-a4-inner .inv-payment-row {
+  margin-top: clamp(20px, 5%, 70px);
+  flex-shrink: 0;
+}
+
+.inv-a4-inner .inv-footer {
+  margin-top: auto;
+  flex-shrink: 0;
+  padding-bottom: 4px;
+}
+
+/* ============================= */
+/* A4: BANYAK ITEM + GAMBAR      */
+/* padatkan agar muat di A4      */
+/* ============================= */
+.inv-a4-inner .inv-table td {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.inv-a4-inner .inv-table th {
+  padding: 7px 8px;
+  font-size: 12px;
+}
+
+.inv-a4-inner .inv-images-row td {
+  padding: 6px 8px;
+}
+
+.inv-a4-inner .inv-img-wrap-grid {
+  gap: 4px;
+}
+
+.inv-a4-inner .inv-img-grid {
+  width: 62px;
+  height: 62px;
+}
+
+/* ============================= */
+/* PAGE INDICATOR                */
+/* ============================= */
+.inv-page-indicator {
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+  font-style: italic;
+  padding-top: 12px;
+  border-top: 1px dashed #e5e7eb;
+  margin-top: 12px;
+}
+
+/* ============================= */
+/* HEADER                        */
+/* ============================= */
+.inv-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0;
+}
+
+.invoice-logo {
+  width: 350px;
+  height: auto;
+  object-fit: contain;
+  object-position: left bottom;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.inv-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 4px;
+  align-self: flex-end;
+  flex-shrink: 0;
+}
+
+.inv-title {
+  font-size: 30px;
+  font-weight: 900;
+  color: #2c4775;
+  letter-spacing: 2px;
+  line-height: 1;
+  margin: 0;
+  text-decoration: none;
+}
+
+/* ============================= */
+/* META BOX                      */
+/* ============================= */
+.inv-meta {
+  display: flex;
+  gap: 0;
+}
+
+.inv-meta div {
+  background: #2f5496;
+  color: white;
+  padding: 7px 14px;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.inv-meta div:first-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  min-width: 190px;
+}
+
+/* ============================= */
+/* CUSTOMER BOX                  */
+/* ============================= */
+.inv-customer {
+  background: #2f5496;
+  color: white;
+  padding: 14px 18px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.inv-customer p {
+  margin: 2px 0;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.inv-customer h5 {
+  margin: 2px 0;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.inv-customer-yth {
+  font-weight: 700;
+  font-size: 15px !important;
+  text-decoration: none !important;
+  -webkit-text-decoration: none !important;
+  text-underline-offset: unset !important;
+  margin-bottom: 4px !important;
+}
+
+.inv-customer * {
+  text-decoration: none !important;
+}
+
+/* ============================= */
+/* TABLE                         */
+/* ============================= */
+.inv-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border-top: none;
+  border-bottom: none;
+}
+
+.inv-table th {
+  background: #2f5496;
+  color: white;
+  padding: 10px 8px;
+  border: 1px solid #1a3357;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.inv-table td {
+  padding: 10px 8px;
+  border-top: none;
+  border-bottom: none;
+  border-left: 1px solid #b0bcca;
+  border-right: 1px solid #b0bcca;
+  font-size: 15px;
+  vertical-align: top;
+}
+
+.inv-td-center {
+  text-align: center;
+}
+
+/* Border bottom baris terakhir A5 tanpa gambar */
+.inv-row-last-a5 td {
+  border-bottom: 1px solid #b0bcca;
+}
+
+/* ============================= */
+/* BARIS GAMBAR DALAM TABEL      */
+/* ============================= */
+.inv-images-row td {
+  border-top: none;
+  border-bottom: 1px solid #b0bcca;
+  border-left: 1px solid #b0bcca;
+  border-right: 1px solid #b0bcca;
+  padding: 10px 8px;
+  vertical-align: top;
+}
+
+/* 1 gambar — 50% lebar kolom deskripsi */
+.inv-img-wrap-single {
+  display: flex;
+}
+
+.inv-img-single {
+  width: 50%;
+  height: auto;
+  margin-bottom: 100px;
+  max-height: 280px;
+  object-fit: contain;
+  border-radius: 5px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Banyak gambar — grid */
+.inv-img-wrap-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.inv-img-grid {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ── A5: gambar lebih kecil ── */
+.paper-a5 .inv-img-single {
+  width: 35%;
+  max-height: 80px;
+}
+
+.paper-a5 .inv-img-grid {
+  width: 60px;
+  height: 60px;
+}
+
+/* A5 pair sheet juga mengikuti ukuran kecil */
+.inv-a5-pair-sheet .inv-img-single {
+  width: 35%;
+  max-height: 80px;
+}
+
+.inv-a5-pair-sheet .inv-img-grid {
+  width: 60px;
+  height: 60px;
+}
+
+/* ============================= */
+/* TOTAL ROWS                    */
+/* ============================= */
+.grand-total-row td {
+  padding: 8px;
+  font-size: 13px;
+}
+
+.total-label {
+  background: #2c4775;
+  color: white !important;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid #1a3357 !important;
+  text-decoration: none;
+}
+
+.shipping-label {
+  background: #3f5f9b !important;
+}
+
+.grand-label {
+  background: #2c4775 !important;
+  font-weight: 700 !important;
+}
+
+.grand-value {
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  text-align: center;
+  border: 1px solid #b0bcca !important;
+}
+
+.total-value {
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ============================= */
+/* PAYMENT + SIGNATURE           */
+/* ============================= */
+.inv-payment-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 100%;
+  gap: 16px;
+}
+
+.pay-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 2px 0;
+  text-decoration: none;
+}
+
+.pay-transfer {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+  text-decoration: none;
+}
+
+.pay-rekening {
+  font-size: 26px;
+  font-weight: 900;
+  color: #1a3357;
+  margin: 2px 0 4px 0;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  line-height: 1.1;
+}
+
+.pay-bank-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  margin: 0;
+  text-decoration: none;
+}
+
+.pay-tunai {
+  font-size: 22px;
+  font-weight: 900;
+  color: #1a3357;
+  margin: 8px 0 4px 0;
+  letter-spacing: 0.5px;
+}
+
+.inv-signature-blank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  text-align: center;
+  padding-bottom: 2px;
+}
+
+.inv-signature-name {
+  font-size: 13px;
+  color: #1f2937;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  border: none !important;
+  border-top: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  align-self: center !important;
+  flex-shrink: 0;
+}
+
+.inv-signature-space {
+  border: none !important;
+}
+
+/* ============================= */
+/* FOOTER                        */
+/* ============================= */
+.inv-footer {
+  margin-top: 7%;
+  padding-top: 1px;
+  display: flex;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 15px;
+  color: #2c4775;
+  gap: 60px;
+}
+
+.inv-footer div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ============================= */
+/* A5 — invoice 1 item           */
+/* ============================= */
+.invoice-paper.paper-a5 {
+  width: 210mm;
+  min-width: 210mm;
+  height: 148.5mm;
+  max-height: 148.5mm;
+  overflow: hidden;
+  padding: 40px 28px 10px 28px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Konten tengah tumbuh mengisi sisa ruang */
+.paper-a5 .inv-a5-body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* A5: header logo */
+.paper-a5 .invoice-logo { width: 300px; }
+
+/* A5: meta box */
+.paper-a5 .inv-meta div { padding: 6px 12px; font-size: 11px; }
+.paper-a5 .inv-meta div:first-child { min-width: 170px; }
+
+/* A5: customer box */
+.paper-a5 .inv-customer {
+  padding: 10px 16px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.paper-a5 .inv-customer p,
+.paper-a5 .inv-customer h5,
+.paper-a5 .inv-customer-yth {
+  font-size: 15px !important;
+  margin: 1px 0 !important;
+}
+
+/* A5: tabel */
+.paper-a5 .inv-table th { padding: 7px; font-size: 12px; }
+.paper-a5 .inv-table td { padding: 6px 7px; font-size: 14px; }
+
+/* A5: payment — tidak boleh grow, jangan dorong footer */
+.paper-a5 .inv-payment-row {
+  margin-top: 10px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+/* ============================= */
+/* A5: PAYMENT TUNAI KHUSUS      */
+/* ============================= */
+.paper-a5 .inv-payment-row-tunai {
+  margin-top: 60px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.paper-a5 .inv-payment-row-tunai .pay-title {
+  margin-bottom: 4px;
+}
+
+.paper-a5 .inv-payment-row-tunai .name-tunai {
+  align-self: center;
+  padding-top: 8px;
+}
+
+.paper-a5 .pay-title,
+.paper-a5 .pay-transfer { font-size: 15px; }
+.paper-a5 .pay-rekening { font-size: 25px; margin: 2px 0 3px 0; }
+.paper-a5 .pay-bank-name { font-size: 15px; }
+.paper-a5 .pay-tunai { font-size: 18px; margin: 4px 0 2px 0; }
+
+/* A5: footer — selalu di paling bawah */
+.paper-a5 .inv-footer {
+  margin-top: auto;
+  padding-top: 0px;
+  padding-bottom: 18px;
+  font-size: 15px;
+  gap: 32px;
+  flex-shrink: 0;
+}
+.paper-a5 .inv-footer div svg { width: 15px; height: 15px; }
+
+/* ============================= */
+/* A5 SHEET PREVIEW (single)     */
+/* ============================= */
+.inv-a5-sheet {
+  width: 210mm;
+  min-width: 210mm;
+  background: #fff;
+  margin: 0 auto 20px auto;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.12),
+    0 4px 16px rgba(0,0,0,0.10),
+    0 8px 32px rgba(0,0,0,0.08);
+}
+
+.inv-a5-sheet .invoice-paper.paper-a5 {
+  margin: 0;
+  box-shadow: none;
+}
+
+/* ============================= */
+/* A5 PAIR SHEET (2 inv A5)      */
+/* ============================= */
+.inv-a5-pair-sheet .invoice-paper.paper-a5 {
+  margin: 0;
+  box-shadow: none;
+}
+.inv-a5-pair-sheet .paper-a5-top  { border-bottom: none; }
+.inv-a5-pair-sheet .paper-a5-bottom { border-top: none; }
+
+/* Garis potong di preview */
+.inv-cut-line {
+  width: 100%;
+  border-top: 1.5px dashed #c4c4c4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+.inv-cut-label {
+  position: absolute;
+  top: -9px;
+  background: #e5e7eb;
+  font-size: 10px;
+  color: #9ca3af;
+  font-weight: 700;
+  padding: 1px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.8px;
+}
+
+/* ============================= */
+/* SIGNED — TTD & QRIS           */
+/* ============================= */
+.inv-signed-qris {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.inv-signed-stamp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.inv-stamp-wrap {
+  position: relative;
+  width: 160px;
+  height: 150px;
+}
+
+/* ============================= */
+/* ACTION — BADGES               */
+/* ============================= */
+.ia-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ia-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.ia-badge-a5   { background: #fef3c7; color: #92400e; }
+.ia-badge-a4   { background: #dbeafe; color: #1e40af; }
+.ia-badge-page { background: #f3f4f6; color: #374151; }
+.ia-badge-pair {
+  background: #d1fae5;
+  color: #065f46;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ia-badge-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #065f46;
+  padding: 0;
+  line-height: 1;
+  font-size: 13px;
+  opacity: 0.7;
+}
+.ia-badge-remove:hover { opacity: 1; }
+
+/* Pair Print button (aktif) */
+.ia-btn-paired {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1.5px solid #6ee7b7 !important;
+}
+
+/* ============================= */
+/* PAIR MODAL — SEARCH           */
+/* ============================= */
+.pair-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 20px 0;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+.pair-search-icon { color: #9ca3af; flex-shrink: 0; }
+.pair-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #111827;
+  outline: none;
+}
+.pair-search-input::placeholder { color: #9ca3af; }
+
+/* ============================= */
+/* PAIR MODAL — PAGINATION       */
+/* ============================= */
+.pair-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+.pair-page-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.15s, border-color 0.15s;
+}
+.pair-page-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+.pair-page-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.pair-page-info {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 48px;
+  text-align: center;
+}
+
+/* ============================= */
+/* ACTION BUTTONS                */
+/* ============================= */
+.invoice-action {
+  width: 210mm;
+  margin: 0 auto 48px auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+}
+
+.ia-btn-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ia-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 11px;
+  font-size: 13.5px;
+  font-family: 'Plus Jakarta Sans', "Segoe UI", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+
+.ia-btn svg    { flex-shrink: 0; }
+.ia-btn:active { transform: translateY(0) !important; }
+
+.ia-btn-back {
+  background: #ffffff;
+  color: #475569;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(15, 43, 70, 0.06);
+}
+.ia-btn-back:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1e293b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 43, 70, 0.10);
+}
+
+.ia-btn-save {
+  background: #2c4775;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(44, 71, 117, 0.28);
+}
+.ia-btn-save:hover {
+  background: #3a5a94;
+  box-shadow: 0 6px 20px rgba(44, 71, 117, 0.38);
+  transform: translateY(-1px);
+}
+
+.ia-btn-download {
+  background: linear-gradient(135deg, #f5c518, #e6b800);
+  color: #0b2239;
+  box-shadow: 0 4px 14px rgba(230, 184, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.ia-btn-download:hover {
+  background: linear-gradient(135deg, #fcd34d, #f5c518);
+  box-shadow: 0 6px 22px rgba(230, 184, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.ia-btn-switch {
+  background: #ffffff;
+  color: #0f766e;
+  border: 1.5px solid #99f6e4;
+  box-shadow: 0 1px 4px rgba(15, 118, 110, 0.08);
+}
+.ia-btn-switch:hover {
+  background: #f0fdfa;
+  border-color: #2dd4bf;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15);
+}
+
+.ia-btn-print {
+  background: #ffffff;
+  color: #374151;
+  border: 1.5px solid #d1d5db;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+.ia-btn-print:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+/* ============================= */
+/* PAIR MODAL                    */
+/* ============================= */
+.pair-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.pair-modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 480px;
+  max-width: 95vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.pair-modal-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.pair-modal-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pair-modal-subtitle {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pair-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  font-size: 16px;
+  padding: 6px;
+  border-radius: 8px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+}
+.pair-modal-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.pair-modal-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 14px 20px 0;
+  flex-shrink: 0;
+}
+
+.pair-tab-btn {
+  padding: 7px 18px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: #f3f4f6;
+  color: #374151;
+  transition: background 0.15s, color 0.15s;
+}
+.pair-tab-btn.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+.pair-tab-btn:not(.active):hover {
+  background: #e5e7eb;
+}
+
+.pair-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 20px 16px;
+}
+
+.pair-empty {
+  text-align: center;
+  padding: 36px 0;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.pair-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pair-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-radius: 11px;
+  border: 2px solid #e5e7eb;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+.pair-list-item:hover {
+  border-color: #93c5fd;
+  background: #f8faff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
+}
+.pair-list-item.selected {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.pair-list-info { flex: 1; min-width: 0; }
+
+.pair-list-name {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pair-list-meta {
+  margin: 3px 0 0;
+  font-size: 11px;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pair-list-arrow {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.pair-new-wrap { padding: 8px 0; }
+
+.pair-new-desc {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.pair-new-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.pair-new-btn:hover {
+  background: #1d4ed8;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+}
+
+.pair-modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.pair-cancel-btn {
+  padding: 8px 22px;
+  border-radius: 9px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.15s, border-color 0.15s;
+}
+.pair-cancel-btn:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+/* ============================= */
+/* RESPONSIVE                    */
+/* ============================= */
+@media (max-width: 960px) {
+  .invoice-action {
+    width: 100%;
+    padding: 16px 24px 0;
+    box-sizing: border-box;
+    margin-bottom: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .invoice-action {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 0 14px;
+    margin-bottom: 28px;
+  }
+  .ia-btn-right {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ia-btn {
+    width: 100%;
+    height: 46px;
+    justify-content: center;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+}

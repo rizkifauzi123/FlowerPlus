@@ -1,0 +1,700 @@
+/* ========================
+   IMPORTS
+======================== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ========================
+   PAGE
+======================== */
+.payment-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 28px 32px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ========================
+   HEADER
+======================== */
+.pt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pt-header-text h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0b2239;
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
+}
+
+.pt-header-text p {
+  font-size: 13px;
+  font-weight: 500;
+  color: #8aa0b4;
+  margin: 0;
+}
+
+/* ========================
+   PAPER SIZE TOGGLE
+======================== */
+.pt-paper-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 14px;
+  border: 1px solid #edf1f7;
+  box-shadow: 0 1px 4px rgba(15,43,70,0.04);
+  width: fit-content;
+}
+
+.pt-paper-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  background: transparent;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.pt-paper-btn:hover {
+  background: #f1f5f9;
+  color: #0b2239;
+}
+
+/* Active states */
+.pt-paper-btn.active-all {
+  background: #0b2239;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(11,34,57,0.20);
+}
+
+.pt-paper-btn.active-a5 {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1.5px solid #fde68a;
+  box-shadow: 0 2px 8px rgba(245,158,11,0.15);
+}
+
+.pt-paper-btn.active-a4 {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1.5px solid #bfdbfe;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.15);
+}
+
+/* Count badge di dalam tombol */
+.pt-paper-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(0,0,0,0.08);
+  color: inherit;
+  line-height: 1;
+}
+
+.pt-paper-btn.active-all .pt-paper-count { background: rgba(255,255,255,0.20); }
+.pt-paper-count.a5 { background: #fde68a; color: #92400e; }
+.pt-paper-count.a4 { background: #bfdbfe; color: #1e40af; }
+
+/* ========================
+   PROGRESS CARD
+======================== */
+.pt-progress-card {
+  background: #ffffff;
+  padding: 22px 24px;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #edf1f7;
+  box-shadow: 0 1px 6px rgba(15, 43, 70, 0.05);
+}
+
+.pt-progress-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.pt-progress-label h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0b2239;
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pt-progress-label span {
+  font-size: 12.5px;
+  color: #8aa0b4;
+  font-weight: 500;
+}
+
+/* Badge di judul progress */
+.pt-progress-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 99px;
+}
+
+.pt-progress-badge.a5 {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.pt-progress-badge.a4 {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.pt-progress-rate { text-align: right; }
+
+.pt-progress-rate h3 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0b2239;
+  margin: 0 0 3px;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.pt-progress-rate span {
+  font-size: 12px;
+  color: #8aa0b4;
+  font-weight: 500;
+}
+
+/* ========================
+   PROGRESS BAR
+======================== */
+.pt-bar-track {
+  height: 8px;
+  background: #f1f5f9;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.pt-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1d6fa0, #0b2239);
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================
+   SUMMARY CARDS
+======================== */
+.pt-summary-row {
+  display: flex;
+  gap: 12px;
+}
+
+.pt-summary-card {
+  flex: 1;
+  padding: 16px 14px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid transparent;
+}
+
+.pt-summary-card svg { margin-bottom: 2px; }
+
+.pt-summary-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.pt-summary-card span {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.pt-summary-card.paid    { background: #f0fdf4; color: #15a34a; border-color: #bbf7d0; }
+.pt-summary-card.pending { background: #fffbeb; color: #ca8a04; border-color: #fde68a; }
+.pt-summary-card.overdue { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+
+/* ========================
+   FILTER BAR
+======================== */
+.pt-filter-bar {
+  background: #ffffff;
+  padding: 11px 16px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  border: 1px solid #edf1f7;
+  box-shadow: 0 1px 6px rgba(15, 43, 70, 0.04);
+  flex-wrap: wrap;
+}
+
+.pt-filter-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8aa0b4;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.pt-filter-divider { width: 1px; height: 22px; background: #edf1f7; flex-shrink: 0; }
+
+.pt-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.pt-cal-icon { color: #8aa0b4; flex-shrink: 0; }
+
+/* Hasil filter count */
+.pt-filter-result {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.pt-filter-result span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8aa0b4;
+  background: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 7px;
+}
+
+/* ========================
+   CUSTOM SELECT
+======================== */
+.pt-select { position: relative; }
+
+.pt-select-trigger {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 11px 0 13px;
+  background: #f8fafc;
+  border: 1.5px solid #e8eef4;
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  white-space: nowrap;
+  outline: none;
+}
+
+.pt-select-trigger:hover { border-color: #c8d8e4; background: #f1f5f9; }
+.pt-select-trigger.open  { border-color: #93c5fd; background: #ffffff; box-shadow: 0 0 0 3px rgba(59,130,246,0.07); }
+
+.pt-chevron { color: #aab8c4; flex-shrink: 0; transition: transform 0.2s ease; }
+.pt-chevron.rotated { transform: rotate(180deg); }
+
+.pt-select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #e8eef4;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(15,43,70,0.06), 0 16px 40px rgba(15,43,70,0.11);
+  padding: 5px;
+  z-index: 300;
+  animation: ptDropIn 0.14s ease;
+}
+
+@keyframes ptDropIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pt-select-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 11px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.13s;
+  white-space: nowrap;
+}
+
+.pt-select-option:hover    { background: #f4f8fb; color: #0b2239; }
+.pt-select-option.selected { color: #1d6fa0; font-weight: 600; background: #f0f7ff; }
+.pt-check                  { color: #1d6fa0; flex-shrink: 0; }
+
+/* ========================
+   INVOICE LIST
+======================== */
+.pt-list { display: flex; flex-direction: column; gap: 10px; }
+
+.pt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 56px 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #edf1f7;
+  color: #94a3b8;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.pt-empty-icon { font-size: 32px; opacity: 0.45; }
+
+/* ========================
+   INVOICE ITEM
+======================== */
+.pt-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 16px 24px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1.5px solid #edf1f7;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.18s, transform 0.18s;
+}
+
+.pt-item:hover { box-shadow: 0 4px 18px rgba(15,43,70,0.08); transform: translateY(-1px); }
+
+.pt-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  border-radius: 14px 0 0 14px;
+}
+
+.pt-item.paid    { background: #f8fffc; border-color: #bbf7d0; }
+.pt-item.paid::before    { background: #22c55e; }
+.pt-item.unpaid  { background: #fffdf5; border-color: #fde68a; }
+.pt-item.unpaid::before  { background: #f59e0b; }
+.pt-item.overdue { background: #fffafa; border-color: #fecaca; }
+.pt-item.overdue::before { background: #ef4444; }
+
+/* ========================
+   ITEM LEFT
+======================== */
+.pt-item-left  { display: flex; align-items: center; gap: 14px; min-width: 0; }
+
+.pt-status-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.pt-status-icon.paid    { background: #dcfce7; color: #16a34a; }
+.pt-status-icon.unpaid  { background: #fef9c3; color: #ca8a04; }
+.pt-status-icon.overdue { background: #fee2e2; color: #dc2626; }
+
+.pt-item-info  { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.pt-item-title { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.pt-inv-number    { font-size: 14px; font-weight: 700; color: #0b2239; letter-spacing: 0.1px; }
+.pt-item-customer { font-size: 12.5px; color: #8aa0b4; font-weight: 500; }
+
+/* ========================
+   BADGES
+======================== */
+.pt-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.badge-paid    { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.badge-unpaid  { background: #fef9c3; color: #a16207; border: 1px solid #fde68a; }
+.badge-overdue { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* ========================
+   PAPER SIZE BADGE (di item)
+======================== */
+.pt-size-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+
+.pt-size-badge.size-a5 {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.pt-size-badge.size-a4 {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+/* ========================
+   ITEM RIGHT
+======================== */
+.pt-item-right  { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.pt-item-meta   { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.pt-amount      { font-size: 14.5px; font-weight: 800; color: #0b2239; white-space: nowrap; letter-spacing: -0.3px; }
+.pt-date        { font-size: 12px; color: #94a3b8; font-weight: 500; white-space: nowrap; line-height: 1.6; }
+.pt-item-actions{ display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
+
+.pt-late-tag {
+  display: inline-flex;
+  align-items: center;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 4px 10px;
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+}
+
+/* ========================
+   MARK AS PAID BUTTON
+======================== */
+.pt-mark-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+  letter-spacing: -0.1px;
+}
+
+.pt-mark-btn.unpaid {
+  background: #0b2239; color: #ffffff;
+  box-shadow: 0 3px 10px rgba(11,34,57,0.22);
+}
+.pt-mark-btn.unpaid:hover {
+  background: #1e3a52;
+  box-shadow: 0 5px 16px rgba(11,34,57,0.32);
+  transform: translateY(-1px);
+}
+
+.pt-mark-btn.overdue {
+  background: linear-gradient(135deg, #ef4444, #dc2626); color: #ffffff;
+  box-shadow: 0 3px 10px rgba(220,38,38,0.28);
+}
+.pt-mark-btn.overdue:hover {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  box-shadow: 0 5px 16px rgba(220,38,38,0.38);
+  transform: translateY(-1px);
+}
+
+.pt-mark-btn:active { transform: translateY(0) !important; }
+
+/* ========================
+   CANCEL MARK BUTTON
+======================== */
+.pt-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  white-space: nowrap;
+  background: #ffffff;
+  color: #6b7280;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+  letter-spacing: -0.1px;
+}
+
+.pt-cancel-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(220,38,38,0.12);
+}
+
+.pt-cancel-btn:active  { transform: translateY(0) !important; }
+.pt-cancel-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ========================
+   PAGINATION
+======================== */
+.pt-pagination {
+  display: flex; align-items: center;
+  gap: 5px; justify-content: center;
+  margin-top: 20px; flex-wrap: wrap;
+}
+
+.pt-pagination button {
+  min-width: 34px; height: 34px; padding: 0 10px;
+  border: 1.5px solid #e8eef4; background: #ffffff;
+  cursor: pointer; border-radius: 9px;
+  font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500; color: #334155; transition: all 0.15s;
+}
+
+.pt-pagination button:hover:not(:disabled) { background: #f4f8fb; border-color: #c8d8e4; }
+.pt-pagination button.active { background: #0b2239; color: #ffffff; border-color: #0b2239; font-weight: 700; }
+.pt-pagination button:disabled { opacity: 0.35; cursor: not-allowed; }
+.pt-page-arrow { font-size: 17px !important; color: #5a7a8a !important; }
+.pt-ellipsis { color: #94a3b8; font-size: 13px; padding: 0 4px; line-height: 34px; }
+
+/* ========================
+   RESPONSIVE — TABLET
+======================== */
+@media (max-width: 1023px) {
+  .payment-page { padding: 20px 20px; }
+  .pt-progress-rate h3 { font-size: 26px; }
+  .pt-summary-card h3 { font-size: 18px; }
+  .pt-item { padding: 14px 16px 14px 20px; }
+  .pt-mark-btn { padding: 0 13px; font-size: 12px; }
+}
+
+/* ========================
+   RESPONSIVE — MOBILE
+======================== */
+@media (max-width: 767px) {
+  .payment-page { padding: 16px 14px; }
+  .pt-header-text h2 { font-size: 19px; }
+  .pt-paper-toggle { width: 100%; }
+  .pt-paper-btn { flex: 1; justify-content: center; font-size: 12px; padding: 0 10px; }
+  .pt-progress-top { flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .pt-progress-rate { display: flex; align-items: baseline; gap: 10px; text-align: left; }
+  .pt-progress-rate h3 { font-size: 24px; }
+  .pt-summary-row { gap: 8px; }
+  .pt-summary-card { padding: 12px 8px; }
+  .pt-summary-card h3 { font-size: 18px; }
+  .pt-summary-card span { font-size: 10.5px; }
+  .pt-summary-card svg { width: 16px; height: 16px; }
+  .pt-filter-left { display: none; }
+  .pt-filter-divider { display: none; }
+  .pt-filter-controls { gap: 7px; width: 100%; }
+  .pt-select-trigger { height: 35px; font-size: 12.5px; border-radius: 9px; padding: 0 9px 0 11px; }
+  .pt-item { flex-direction: column; align-items: flex-start; padding: 14px 16px 14px 20px; gap: 12px; }
+  .pt-item-left { width: 100%; }
+  .pt-item-right { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .pt-item-meta { align-items: flex-start; }
+  .pt-date { white-space: normal; }
+  .pt-item-actions { align-items: flex-start; }
+  .pt-amount { font-size: 15px; }
+  .pt-filter-result { display: none; }
+}
+
+/* ========================
+   VERY SMALL — ≤ 400px
+======================== */
+@media (max-width: 400px) {
+  .pt-summary-row { gap: 6px; }
+  .pt-summary-card { padding: 10px 5px; }
+  .pt-summary-card h3 { font-size: 16px; }
+  .pt-item-right { flex-direction: column; gap: 8px; }
+  .pt-item-actions { width: 100%; }
+  .pt-mark-btn, .pt-cancel-btn { width: 100%; justify-content: center; height: 38px; }
+  .pt-select-trigger { min-width: 90px !important; font-size: 12px; padding: 0 8px 0 10px; }
+}
+
+/* ========================
+   KEYBOARD ACTIVE STATE
+======================== */
+.pt-item.kb-active {
+  box-shadow: 0 0 0 2px #93c5fd, 0 4px 18px rgba(15,43,70,0.08);
+  transform: translateY(-1px);
+}
+
+/* ========================
+   FLASH HIGHLIGHT
+======================== */
+@keyframes flashYellow {
+  0%   { background: #fefce8; box-shadow: 0 0 0 1.5px #fef08a, 0 2px 10px rgba(234,179,8,0.10); }
+  60%  { background: #fefce8; box-shadow: 0 0 0 1.5px #fef08a, 0 2px 10px rgba(234,179,8,0.10); }
+  100% { background: inherit; box-shadow: inherit; }
+}
+
+.pt-item.flash-highlight {
+  animation: flashYellow 2s ease forwards;
+}
