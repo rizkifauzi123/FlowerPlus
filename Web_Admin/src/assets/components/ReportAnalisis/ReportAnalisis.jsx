@@ -122,7 +122,6 @@ const ReportAnalisis = () => {
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [activeIndex, setActiveIndex]         = useState(null);
   const [openDropdown, setOpenDropdown]       = useState(false);
-  const [exportType, setExportType]           = useState("pdf");
 
   /* ======================== PERIOD LABEL ======================== */
 
@@ -176,7 +175,6 @@ const ReportAnalisis = () => {
     return periodFiltered.filter(inv => (inv.paper_size ?? "a4") === selectedPaper);
   }, [periodFiltered, selectedPaper]);
 
-  // Count total per paper size (dari semua invoice, tanpa filter period)
   const a5Total = invoices.filter(inv => (inv.paper_size ?? "a4") === "a5").length;
   const a4Total = invoices.filter(inv => (inv.paper_size ?? "a4") === "a4").length;
 
@@ -201,6 +199,11 @@ const ReportAnalisis = () => {
 
   const totalAmount = processed.reduce((a, i) => a + parseAmount(i.amount), 0);
 
+  /* ── Total Keseluruhan: nominal semua invoice apapun statusnya ── */
+  const totalKeseluruhan = filteredInvoices.reduce(
+    (a, i) => a + parseAmount(i.amount), 0
+  );
+
   const collectionRate =
     totalAmount === 0 ? 0 : ((totalRevenue / totalAmount) * 100).toFixed(1);
 
@@ -209,9 +212,9 @@ const ReportAnalisis = () => {
   const overdueCount = processed.filter((i) => i.computedStatus === "overdue").length;
 
   const statusData = [
-    { name: "Paid",    value: paidCount,    color: "#22C55E" },
-    { name: "Unpaid",  value: unpaidCount,  color: "#F59E0B" },
-    { name: "Overdue", value: overdueCount, color: "#EF4444" },
+    { name: "Lunas",       value: paidCount,    color: "#22C55E" },
+    { name: "Belum Bayar", value: unpaidCount,  color: "#F59E0B" },
+    { name: "Jatuh Tempo", value: overdueCount, color: "#EF4444" },
   ];
 
   /* ======================== MONTHLY DATA ======================== */
@@ -246,7 +249,7 @@ const ReportAnalisis = () => {
     const grouped = {};
     processed.forEach((inv) => {
       if (inv.computedStatus === "paid") {
-        const bank = inv.bank || "Other";
+        const bank = inv.bank || "Lainnya";
         grouped[bank] = (grouped[bank] || 0) + parseAmount(inv.amount);
       }
     });
@@ -262,7 +265,7 @@ const ReportAnalisis = () => {
     const grouped = {};
     processed.forEach((inv) => {
       if (inv.computedStatus === "paid") {
-        const customer = inv.customer || inv.kepada || "Unknown";
+        const customer = inv.customer || inv.kepada || "Tidak Diketahui";
         grouped[customer] = (grouped[customer] || 0) + parseAmount(inv.amount);
       }
     });
@@ -281,7 +284,6 @@ const ReportAnalisis = () => {
   /* ======================== EXPORT ======================== */
 
   const handleExportExcel = () => {
-    // Sheet 1 — tren pendapatan bulanan
     const worksheetData = monthlyData.map((item) => ({
       Periode: item.month,
       Total_Pendapatan: item.value,
@@ -290,24 +292,23 @@ const ReportAnalisis = () => {
     const workbook  = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Tren Pendapatan");
 
-    // Sheet 2 — ringkasan KPI
     const summaryData = [
-      { Metrik: "Total Revenue",       Nilai: totalRevenue },
-      { Metrik: "Collection Rate (%)", Nilai: collectionRate },
-      { Metrik: "Total Invoices",      Nilai: filteredInvoices.length },
-      { Metrik: "Active Customers",    Nilai: new Set(filteredInvoices.map((i) => i.customer)).size },
-      { Metrik: "Paid",                Nilai: paidCount },
-      { Metrik: "Unpaid",              Nilai: unpaidCount },
-      { Metrik: "Overdue",             Nilai: overdueCount },
+      { Metrik: "Total Keseluruhan",    Nilai: totalKeseluruhan },
+      { Metrik: "Total Pendapatan",     Nilai: totalRevenue },
+      { Metrik: "Tingkat Penagihan (%)", Nilai: collectionRate },
+      { Metrik: "Total Invoice",        Nilai: filteredInvoices.length },
+      { Metrik: "Pelanggan Aktif",      Nilai: new Set(filteredInvoices.map((i) => i.customer)).size },
+      { Metrik: "Lunas",                Nilai: paidCount },
+      { Metrik: "Belum Bayar",          Nilai: unpaidCount },
+      { Metrik: "Jatuh Tempo",          Nilai: overdueCount },
     ];
     XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(summaryData), "Ringkasan");
 
-    // Sheet 3 — top customers
     if (topCustomers.length > 0) {
       const customerData = topCustomers.map((c) => ({
-        Rank: c.rank, Customer: c.customer, Total: c.total,
+        Peringkat: c.rank, Pelanggan: c.customer, Total: c.total,
       }));
-      XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(customerData), "Top Customer");
+      XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(customerData), "Top Pelanggan");
     }
 
     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
@@ -392,7 +393,7 @@ const ReportAnalisis = () => {
             {/* EXPORT */}
             <button className="ra-export-btn" onClick={handleExportExcel}>
               <Download size={14} />
-              Export Excel
+              Ekspor Excel
             </button>
           </div>
         </div>
@@ -425,26 +426,62 @@ const ReportAnalisis = () => {
           </button>
         </div>
 
-        {/* SUMMARY */}
+        {/* ── CARD TOTAL KESELURUHAN — full width, paling atas ── */}
+        <div className="ra-total-card">
+          <div className="ra-total-card-left">
+            <div className="ra-total-icon">
+              <TrendingUp size={22} />
+            </div>
+            <div>
+              <p className="ra-total-label">Total Keseluruhan Transaksi</p>
+              <p className="ra-total-value">
+                Rp {totalKeseluruhan.toLocaleString("id-ID")}
+              </p>
+              <p className="ra-total-sub">Seluruh nilai nominal invoice pada periode ini</p>
+            </div>
+          </div>
+          {/* <div className="ra-total-card-right">
+            <div className="ra-total-stat">
+              <span className="ra-total-stat-label">Sudah Dibayar</span>
+              <span className="ra-total-stat-value paid">
+                Rp {totalRevenue.toLocaleString("id-ID")}
+              </span>
+            </div>
+            <div className="ra-total-divider" />
+            <div className="ra-total-stat">
+              <span className="ra-total-stat-label">Belum Dibayar</span>
+              <span className="ra-total-stat-value unpaid">
+                Rp {(totalKeseluruhan - totalRevenue).toLocaleString("id-ID")}
+              </span>
+            </div>
+            <div className="ra-total-divider" />
+            <div className="ra-total-stat">
+              <span className="ra-total-stat-label">Tingkat Penagihan</span>
+              <span className="ra-total-stat-value rate">{collectionRate}%</span>
+            </div>
+          </div> */}
+        </div>
+
+        {/* SUMMARY GRID — 4 kartu info */}
         <div className="ra-summary-grid">
           {[
             {
-              label: "Total Revenue",
+              label: "Total Pendapatan",
               value: `Rp ${totalRevenue.toLocaleString("id-ID")}`,
               icon: <TrendingUp size={17} />,
             },
             {
-              label: "Collection Rate",
+              label: "Tingkat Penagihan",
               value: `${collectionRate}%`,
               icon: <Wallet size={17} />,
             },
             {
-              label: "Total Invoices",
+              label: "Total Invoice",
               value: filteredInvoices.length,
               icon: <FileText size={17} />,
             },
             {
-              label: "Active Customers",
+              label: "Pelanggan Aktif",
               value: new Set(filteredInvoices.map((i) => i.customer)).size,
               icon: <Users size={17} />,
             },
@@ -587,7 +624,7 @@ const ReportAnalisis = () => {
           </div>
 
           <div className="ra-card">
-            <p className="ra-card-title">Top 10 Customer</p>
+            <p className="ra-card-title">10 Pelanggan Teratas</p>
             {topCustomers.length === 0 ? (
               <p className="ra-empty">Belum ada pembayaran masuk</p>
             ) : (

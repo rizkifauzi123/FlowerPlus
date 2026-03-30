@@ -125,8 +125,8 @@ const CreateInvoiceForm = () => {
 
   // ── Tentukan paper_size ──
   // A5 hanya jika: 1 item DAN tidak ada gambar sama sekali
-  // Sinkron dengan logika backend (InvoiceController)
-  const hasAnyImage    = items.some(item => item.preview || item.image);
+  // Jika ada gambar (1 atau lebih) → selalu A4 (format SC)
+  const hasAnyImage = items.some(item => item.preview || item.image);
   const derivedPaperSize = isEditMode && existingInvoice?.paper_size
     ? existingInvoice.paper_size
     : (items.length <= 1 && !hasAnyImage) ? "a5" : "a4";

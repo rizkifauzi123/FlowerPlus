@@ -10,11 +10,11 @@ import "../../Style/Invoice/InvoiceManagement.css";
 import { useApp } from "../../../context/AppContext";
 
 const banks = [
-  "All Banks", "BCA", "Mandiri", "BRI", "BNI",
-  "CIMB Niaga", "Permata", "Danamon", "BTN", "OCBC", "Other"
+  "Semua Bank", "BCA", "Mandiri", "BRI", "BNI",
+  "CIMB Niaga", "Permata", "Danamon", "BTN", "OCBC", "Lainnya"
 ];
 
-const statuses = ["All Status", "Paid", "Unpaid"];
+const statuses = ["Semua Status", "Lunas", "Belum Lunas"];
 
 /* ===============================
    HELPER: Format tanggal DD/MM/YYYY
@@ -41,9 +41,7 @@ const formatDueDateBroadcast = (dateString) => {
 };
 
 /* ===============================
-   HELPER: Link download invoice (absolut, hidup saat hosting)
-   Menggunakan window.location.origin agar otomatis menyesuaikan
-   domain production maupun localhost.
+   HELPER: Link download invoice
 ================================= */
 const getDownloadLink = (item) => {
   const base = window.location.origin;
@@ -67,17 +65,17 @@ const BankDropdown = ({ value, customBank, onBankChange, onCustomBankChange }) =
   }, []);
 
   useEffect(() => {
-    if (open && value === "Other" && inputRef.current) {
+    if (open && value === "Lainnya" && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 80);
     }
   }, [open, value]);
 
   const handleSelect = (option) => {
     onBankChange(option);
-    if (option !== "Other") { onCustomBankChange(""); setOpen(false); }
+    if (option !== "Lainnya") { onCustomBankChange(""); setOpen(false); }
   };
 
-  const displayLabel = value === "Other" && customBank ? `Other: ${customBank}` : value;
+  const displayLabel = value === "Lainnya" && customBank ? `Lainnya: ${customBank}` : value;
 
   return (
     <div className="custom-dropdown bank-dropdown" ref={dropdownRef}>
@@ -104,13 +102,13 @@ const BankDropdown = ({ value, customBank, onBankChange, onCustomBankChange }) =
             </button>
           ))}
 
-          {value === "Other" && (
+          {value === "Lainnya" && (
             <div className="other-bank-input-wrap">
               <div className="other-input-divider" />
-              <div className="other-input-label"><Building2 size={12} /> Enter bank name</div>
+              <div className="other-input-label"><Building2 size={12} /> Masukkan nama bank</div>
               <input
                 ref={inputRef} type="text" className="other-bank-input"
-                placeholder="e.g. Maybank, HSBC..."
+                placeholder="cth. Maybank, HSBC..."
                 value={customBank}
                 onChange={(e) => onCustomBankChange(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
@@ -118,7 +116,7 @@ const BankDropdown = ({ value, customBank, onBankChange, onCustomBankChange }) =
               />
               {customBank && (
                 <button type="button" className="other-apply-btn" onClick={() => setOpen(false)}>
-                  <Check size={12} /> Apply
+                  <Check size={12} /> Terapkan
                 </button>
               )}
             </div>
@@ -180,7 +178,7 @@ const PaperSizeToggle = ({ value, onChange }) => {
   const options = [
     { key: "all",  label: "Semua",  icon: null },
     { key: "a5",   label: "A5",     icon: <Printer size={12} />,  sub: "Cetak" },
-    { key: "a4",   label: "A4",     icon: <Send size={12} />,     sub: "Kirim" },
+    { key: "a4",   label: "A4",     icon: <Send size={12} />,     sub: "PDF" },
   ];
 
   return (
@@ -213,8 +211,8 @@ const InvoiceManagement = () => {
   const paginationRef = useRef(null);
 
   const [customBank,        setCustomBank]        = useState("");
-  const [selectedBank,      setSelectedBank]      = useState("All Banks");
-  const [selectedStatus,    setSelectedStatus]    = useState("All Status");
+  const [selectedBank,      setSelectedBank]      = useState("Semua Bank");
+  const [selectedStatus,    setSelectedStatus]    = useState("Semua Status");
   const [selectedPaperSize, setSelectedPaperSize] = useState("all");
   const [activeDropdown,    setActiveDropdown]    = useState(null);
   const [shareDropdown,     setShareDropdown]     = useState(null);
@@ -260,14 +258,17 @@ const InvoiceManagement = () => {
       const size = inv.paper_size ?? "a4";
       if (size !== selectedPaperSize) return false;
     }
-    if (selectedBank !== "All Banks") {
-      if (selectedBank === "Other") {
+    if (selectedBank !== "Semua Bank") {
+      if (selectedBank === "Lainnya") {
         if (customBank && !inv.bank.toLowerCase().includes(customBank.toLowerCase())) return false;
       } else {
         if (inv.bank !== selectedBank) return false;
       }
     }
-    if (selectedStatus !== "All Status" && inv.status.toLowerCase() !== selectedStatus.toLowerCase()) return false;
+    if (selectedStatus !== "Semua Status") {
+      const statusMap = { "Lunas": "paid", "Belum Lunas": "unpaid" };
+      if (inv.status.toLowerCase() !== (statusMap[selectedStatus] || selectedStatus.toLowerCase())) return false;
+    }
     if (selectedDate && inv.date !== selectedDate) return false;
     if (searchTerm && !inv.customer.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
@@ -323,11 +324,7 @@ const InvoiceManagement = () => {
     const totalItem = (item.items || []).reduce(
       (acc, i) => acc + Number(i.qty || 0) * Number(i.price || 0), 0
     );
-
-    // ✅ Link hidup absolut — otomatis menyesuaikan domain production/localhost
     const linkDownload = getDownloadLink(item);
-
-    // ✅ Format tanggal DD/MM/YYYY
     const tanggal  = formatDateBroadcast(item.date);
     const dueDate  = formatDueDateBroadcast(item.date);
 
@@ -339,7 +336,7 @@ const InvoiceManagement = () => {
       `Tanggal       : ${tanggal}\n` +
       `Total Tagihan : Rp ${totalItem.toLocaleString("id-ID")}\n` +
       `Jatuh Tempo   : ${dueDate}\n\n` +
-      `*Link Download Invoice:*\n` +
+      `*Tautan Unduh Invoice:*\n` +
       `${linkDownload}\n\n` +
       `*Informasi Pembayaran:*\n` +
       `Bank    : Bank Mandiri\n` +
@@ -359,11 +356,7 @@ const InvoiceManagement = () => {
     const totalItem = (item.items || []).reduce(
       (acc, i) => acc + Number(i.qty || 0) * Number(i.price || 0), 0
     );
-
-    // ✅ Link hidup absolut
     const linkDownload = getDownloadLink(item);
-
-    // ✅ Format tanggal DD/MM/YYYY
     const tanggal  = formatDateBroadcast(item.date);
     const dueDate  = formatDueDateBroadcast(item.date);
 
@@ -392,6 +385,7 @@ const InvoiceManagement = () => {
   };
 
   /* ── CALENDAR ── */
+  const HARI = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
   const daysInMonth     = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
 
@@ -402,10 +396,18 @@ const InvoiceManagement = () => {
       <span className={`paper-badge ${isA5 ? "paper-badge-a5" : "paper-badge-a4"}`}>
         {isA5
           ? <><Printer size={10} /> A5 · Cetak</>
-          : <><Send size={10} /> A4 · Kirim</>
+          : <><Send size={10} /> A4 · PDF</>
         }
       </span>
     );
+  };
+
+  /* ── Badge label Indonesia ── */
+  const getBadgeLabel = (status) => {
+    if (status === "paid")   return "Lunas";
+    if (status === "unpaid") return "Belum Lunas";
+    if (status === "overdue") return "Jatuh Tempo";
+    return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
   /* ===============================
@@ -417,11 +419,11 @@ const InvoiceManagement = () => {
       {/* HEADER */}
       <div className="invoice-header">
         <div className="header-text">
-          <h1>Invoice Management</h1>
+          <h1>Manajemen Invoice</h1>
           <p>Kelola semua invoice bisnis Anda</p>
         </div>
         <button className="create-btn-invoice" onClick={() => navigate("/invoice/create?type=normal")}>
-          <Plus size={15} /> Create Invoice
+          <Plus size={15} /> Buat Invoice
         </button>
       </div>
 
@@ -441,7 +443,7 @@ const InvoiceManagement = () => {
         <div className="inv-summary-divider" />
         <div className="inv-summary-item isb-a4" onClick={() => setSelectedPaperSize(selectedPaperSize === "a4" ? "all" : "a4")}>
           <Send size={13} />
-          <span className="isb-label">A4 · Kirim</span>
+          <span className="isb-label">A4 · PDF</span>
           <span className="isb-count isb-count-a4">{countA4}</span>
         </div>
       </div>
@@ -465,7 +467,7 @@ const InvoiceManagement = () => {
               onClick={() => setDateOpen(p => !p)}
             >
               <Calendar size={14} />
-              {selectedDate ? formatDisplayDate(selectedDate) : "Due Date"}
+              {selectedDate ? formatDisplayDate(selectedDate) : "Jatuh Tempo"}
               {selectedDate && (
                 <span className="clear-date" onClick={(e) => { e.stopPropagation(); setSelectedDate(""); }}>×</span>
               )}
@@ -475,11 +477,11 @@ const InvoiceManagement = () => {
               <div className="calendar-dropdown">
                 <div className="calendar-header">
                   <button type="button" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))}>‹</button>
-                  <span>{currentDate.toLocaleString("default", { month: "long", year: "numeric" })}</span>
+                  <span>{currentDate.toLocaleString("id-ID", { month: "long", year: "numeric" })}</span>
                   <button type="button" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))}>›</button>
                 </div>
                 <div className="calendar-grid">
-                  {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => (
+                  {HARI.map(d => (
                     <div key={d} className="calendar-day-label">{d}</div>
                   ))}
                   {Array.from({ length: firstDayOfMonth }).map((_, i) => <div key={`e-${i}`} />)}
@@ -507,7 +509,7 @@ const InvoiceManagement = () => {
           <div className="search-wrap">
             <Search size={14} className="search-icon" />
             <input
-              type="text" placeholder="Search customer..."
+              type="text" placeholder="Cari pelanggan..."
               className="search-input" value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -530,21 +532,21 @@ const InvoiceManagement = () => {
               <th style={{ width: "48px", textAlign: "center" }}>No</th>
               <th>Invoice</th>
               <th>Tipe</th>
-              <th>Customer</th>
+              <th>Pelanggan</th>
               <th>Bank</th>
-              <th>Amount</th>
-              <th>Due Date</th>
+              <th>Jumlah</th>
+              <th>Jatuh Tempo</th>
               <th>Status</th>
-              <th style={{ textAlign: "right" }}>Actions</th>
+              <th style={{ textAlign: "right" }}>Aksi</th>
             </tr>
           </thead>
           <tbody>
             {currentInvoices.length === 0 ? (
               <tr>
-                <td colSpan={8} className="empty-row">
+                <td colSpan={9} className="empty-row">
                   <div className="empty-state">
                     <span className="empty-icon">📄</span>
-                    <span>No invoices found</span>
+                    <span>Tidak ada invoice ditemukan</span>
                   </div>
                 </td>
               </tr>
@@ -565,7 +567,7 @@ const InvoiceManagement = () => {
                   <td className="date-cell">{item.date}</td>
                   <td>
                     <span className={`badge ${item.status}`}>
-                      {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                      {getBadgeLabel(item.status)}
                     </span>
                   </td>
                   <td className="action-cell">
@@ -580,12 +582,12 @@ const InvoiceManagement = () => {
                           onClick={() => navigate(
                             `/invoice/preview/${item.id}?type=${item.type || "normal"}&paper_size=${item.paper_size ?? "a4"}`
                           )}>
-                          <Eye size={14} /> View Details
+                          <Eye size={14} /> Lihat Detail
                         </button>
 
                         <button className="dropdown-item"
                           onClick={() => navigate(`/invoice/edit/${item.id}?type=${item.type || "normal"}`)}>
-                          <Pencil size={14} /> Edit
+                          <Pencil size={14} /> Ubah
                         </button>
 
                         {/* Share sub-dropdown */}
@@ -597,7 +599,7 @@ const InvoiceManagement = () => {
                               setShareDropdown(prev => prev === index ? null : index);
                             }}
                           >
-                            <Share2 size={14} /> Share
+                            <Share2 size={14} /> Bagikan
                             <ChevronDown
                               size={12}
                               style={{
@@ -638,7 +640,7 @@ const InvoiceManagement = () => {
 
                         <button className="dropdown-item delete"
                           onClick={() => { setInvoiceToDelete(item.id); setActiveDropdown(null); }}>
-                          <Trash2 size={14} /> Delete
+                          <Trash2 size={14} /> Hapus
                         </button>
 
                       </div>

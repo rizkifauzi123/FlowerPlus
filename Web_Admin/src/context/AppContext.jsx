@@ -11,7 +11,7 @@ export const AppProvider = ({ children }) => {
      FILTER STATE — tidak reset saat pindah halaman
   ============================ */
   const [ptFilter, setPtFilter] = useState({
-    status: "All Status",
+    status: "Semua Status",
     month:  "Semua Bulan",
     year:   "Semua Tahun",
     page:   1,

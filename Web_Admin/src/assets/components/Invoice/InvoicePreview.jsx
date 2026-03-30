@@ -105,8 +105,8 @@ const InvoicePreview = ({ data, onBack }) => {
   // ── Auto-scale A4 ──
   useEffect(() => {
     if (isA5 || !invoiceData) return;
-    const A4_HEIGHT_PX = 1122; // 297mm pada 96dpi
-    const A4_WIDTH_PX  = 794;  // 210mm pada 96dpi
+    const A4_HEIGHT_PX = 1122;
+    const A4_WIDTH_PX  = 794;
 
     const scalePages = () => {
       const papers = document.querySelectorAll(".invoice-paper-scalable");
@@ -118,7 +118,6 @@ const InvoicePreview = ({ data, onBack }) => {
         const containerWidth = paper.parentElement?.offsetWidth || A4_WIDTH_PX;
         const scaleByWidth   = containerWidth / A4_WIDTH_PX;
 
-        // Scale agar lebar muat di layar
         if (scaleByWidth < 1) {
           paper.style.transformOrigin = "top center";
           paper.style.transform       = `scale(${scaleByWidth})`;
@@ -160,11 +159,100 @@ const InvoicePreview = ({ data, onBack }) => {
   const bankInfo     = getBankInfo(invoiceData.bank || "");
   const grandTotal   = subtotal + shippingCost;
 
-  /* ── PRINT ── */
+  /* ── PRINT ──
+     - Jika A5 + ada pasangan  → pair print (2 invoice dalam 1 lembar A4)
+     - Jika A5 + tanpa pasangan → single print (1 invoice A5 saja)
+     - Jika A4                  → print halaman A4 seperti biasa
+  ── */
   const handlePrint = async () => {
-    const targetEl = isA5
-      ? invoiceRef.current.querySelector(".paper-a5")
-      : invoiceRef.current.querySelector(".invoice-paper-scalable");
+    // ── A5 PAIR PRINT ──
+    if (isA5 && pairedInvoice) {
+      const sheet = document.querySelector(".inv-a5-pair-sheet");
+      if (!sheet) return;
+      const [el1, el2] = sheet.querySelectorAll(".paper-a5");
+      if (!el1 || !el2) return;
+      const [canvas1, canvas2] = await Promise.all([
+        html2canvas(el1, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: "#ffffff", logging: false }),
+        html2canvas(el2, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: "#ffffff", logging: false }),
+      ]);
+      const img1 = canvas1.toDataURL("image/png");
+      const img2 = canvas2.toDataURL("image/png");
+      const printWindow = window.open("", "_blank", "width=900,height=700");
+      printWindow.document.write(`<!DOCTYPE html>
+<html><head>
+  <title>Pair Print A5</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; background: #fff; }
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    .page { width: 210mm; height: 297mm; margin: 0 auto; background: #fff; display: flex; flex-direction: column; overflow: hidden; }
+    .half { width: 210mm; height: 148.5mm; overflow: hidden; flex-shrink: 0; }
+    .half img { display: block; width: 210mm; height: 148.5mm; object-fit: contain; object-position: top left; }
+    .cut-line { width: 100%; flex-shrink: 0; border-top: 1.5px dashed #bbb; display: flex; align-items: center; justify-content: center; }
+    .cut-label { background: #fff; font-size: 9px; color: #aaa; font-family: Arial, sans-serif; font-weight: 700; padding: 0 10px; margin-top: -7px; letter-spacing: 1px; }
+  </style>
+</head><body>
+  <div class="page">
+    <div class="half"><img src="${img1}" /></div>
+    <div class="cut-line"><span class="cut-label">✂ POTONG</span></div>
+    <div class="half"><img src="${img2}" /></div>
+  </div>
+</body></html>`);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => { printWindow.print(); printWindow.close(); }, 1000);
+      return;
+    }
+
+    // ── A5 SINGLE PRINT (tanpa pasangan) ──
+    // Pakai A4 portrait, invoice A5 di setengah atas (148.5mm),
+    // sisa bawah kosong — identik dengan preview 210mm x 148.5mm.
+    if (isA5 && !pairedInvoice) {
+      const targetEl = invoiceRef.current?.querySelector(".paper-a5");
+      if (!targetEl) return;
+      const prevTransform = targetEl.style.transform;
+      targetEl.style.transform = "";
+      const canvas = await html2canvas(targetEl, {
+        scale: 3, useCORS: true, allowTaint: true,
+        backgroundColor: "#ffffff", logging: false,
+        width: targetEl.scrollWidth,
+        height: targetEl.scrollHeight,
+      });
+      targetEl.style.transform = prevTransform;
+      const imgData = canvas.toDataURL("image/png");
+      const printWindow = window.open("", "_blank", "width=900,height=700");
+      printWindow.document.write(`<!DOCTYPE html>
+<html><head>
+  <title>Invoice - ${invoiceData.invoiceNumber || "Draft"}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; background: #fff; }
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+    .page { width: 210mm; height: 297mm; margin: 0 auto; background: #fff; display: flex; flex-direction: column; overflow: hidden; }
+    .half { width: 210mm; height: 148.5mm; overflow: hidden; flex-shrink: 0; }
+    .half img { display: block; width: 210mm; height: 148.5mm; object-fit: fill; }
+    .empty { flex: 1; background: #fff; }
+  </style>
+</head><body>
+  <div class="page">
+    <div class="half"><img src="${imgData}" /></div>
+    <div class="empty"></div>
+  </div>
+</body></html>`);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => { printWindow.print(); printWindow.close(); }, 1000);
+      return;
+    }
+
+    // ── A4 PRINT ──
+    const targetEl = invoiceRef.current.querySelector(".invoice-paper-scalable");
     if (!targetEl) return;
     const prevTransform    = targetEl.style.transform;
     const prevMarginBottom = targetEl.style.marginBottom;
@@ -190,8 +278,8 @@ const InvoicePreview = ({ data, onBack }) => {
       html, body { width: 210mm; }
       body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     }
-    .page { width: 210mm; ${isA5 ? "height: 297mm;" : "height: auto;"} margin: 0 auto; background: #fff; overflow: hidden; }
-    .page img { display: block; width: 210mm; ${isA5 ? "height: 148.5mm; object-fit: contain; object-position: top left;" : "height: auto;"} }
+    .page { width: 210mm; height: auto; margin: 0 auto; background: #fff; overflow: hidden; }
+    .page img { display: block; width: 210mm; height: auto; }
   </style>
 </head><body>
   <div class="page"><img src="${imgData}" /></div>
@@ -261,14 +349,12 @@ const InvoicePreview = ({ data, onBack }) => {
       }
       const result = await response.json();
 
-      // ✅ Bump to top — edit maupun create sama-sama taruh di paling atas
       if (isEdit) {
         setInvoices(prev => [result.data, ...prev.filter(inv => inv.id !== invoiceData.id)]);
       } else {
         setInvoices(prev => [result.data, ...prev]);
       }
 
-      // ✅ Tidak perlu refreshInvoices() — state sudah benar di atas
       navigate("/invoice");
     } catch (error) {
       console.error("Save error:", error);
@@ -278,48 +364,6 @@ const InvoicePreview = ({ data, onBack }) => {
   const handleSwitchType = () => {
     const newType = isSigned ? "unsigned" : "signed";
     navigate(`/invoice/preview/${invoiceData.id || "new"}?type=${newType}`, { state: { invoice: invoiceData } });
-  };
-
-  /* ── Pair & Print ── */
-  const handlePairPrint = async () => {
-    if (!pairedInvoice) return;
-    const sheet = document.querySelector(".inv-a5-pair-sheet");
-    if (!sheet) return;
-    const [el1, el2] = sheet.querySelectorAll(".paper-a5");
-    if (!el1 || !el2) return;
-    const [canvas1, canvas2] = await Promise.all([
-      html2canvas(el1, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: "#ffffff", logging: false }),
-      html2canvas(el2, { scale: 3, useCORS: true, allowTaint: true, backgroundColor: "#ffffff", logging: false }),
-    ]);
-    const img1 = canvas1.toDataURL("image/png");
-    const img2 = canvas2.toDataURL("image/png");
-    const printWindow = window.open("", "_blank", "width=900,height=700");
-    printWindow.document.write(`<!DOCTYPE html>
-<html><head>
-  <title>Pair Print A5</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; background: #fff; }
-    @media print {
-      @page { size: A4 portrait; margin: 0; }
-      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-    .page { width: 210mm; height: 297mm; margin: 0 auto; background: #fff; display: flex; flex-direction: column; overflow: hidden; }
-    .half { width: 210mm; height: 148.5mm; overflow: hidden; flex-shrink: 0; }
-    .half img { display: block; width: 210mm; height: 148.5mm; object-fit: contain; object-position: top left; }
-    .cut-line { width: 100%; flex-shrink: 0; border-top: 1.5px dashed #bbb; display: flex; align-items: center; justify-content: center; }
-    .cut-label { background: #fff; font-size: 9px; color: #aaa; font-family: Arial, sans-serif; font-weight: 700; padding: 0 10px; margin-top: -7px; letter-spacing: 1px; }
-  </style>
-</head><body>
-  <div class="page">
-    <div class="half"><img src="${img1}" /></div>
-    <div class="cut-line"><span class="cut-label">✂ POTONG</span></div>
-    <div class="half"><img src="${img2}" /></div>
-  </div>
-</body></html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 1000);
   };
 
   /* ── Render A5 block (single & pair preview) ── */
@@ -339,7 +383,6 @@ const InvoicePreview = ({ data, onBack }) => {
 
     return (
       <div ref={refProp} className={`invoice-paper paper-a5 ${extraClass}`}>
-        {/* BODY — flex grow, footer tetap di bawah */}
         <div className="inv-a5-body">
           <div className="inv-header">
             <img src={logo} alt="logo" className="invoice-logo" />
@@ -421,7 +464,6 @@ const InvoicePreview = ({ data, onBack }) => {
           </p>
         </div>
         </div>
-        {/* FOOTER — selalu di paling bawah, jarak konsisten */}
         <div className="inv-footer">
           <div><FaGlobe size={15} /> https://flowerplusofficial.com</div>
           <div><FaInstagram size={15} /> flowerplusofficial</div>
@@ -596,7 +638,6 @@ const InvoicePreview = ({ data, onBack }) => {
                 { ...invoiceData, invoiceNumber: invoiceData.invoiceNumber || generatedNumber },
                 "paper-a5-top", null
               )}
-              {/* Garis POTONG — muncul di preview (tidak di print, karena print pakai window baru) */}
               <div className="inv-cut-line">
                 <span className="inv-cut-label">✂ POTONG</span>
               </div>
@@ -735,30 +776,30 @@ const InvoicePreview = ({ data, onBack }) => {
         </div>
 
         <div className="ia-btn-right">
+          {/* Switch TTD — hanya A4 */}
           {!isA5 && (
             <button className="ia-btn ia-btn-switch" onClick={handleSwitchType}>
               <Eye size={16} />
               <span>{isSigned ? "Tanpa TTD" : "Dengan TTD"}</span>
             </button>
           )}
+
+          {/* Pilih Pasangan — hanya A5, tombol opsional terpisah dari Print */}
           {isA5 && (
             <button
               className={`ia-btn ia-btn-switch${pairedInvoice ? " ia-btn-paired" : ""}`}
-              onClick={pairedInvoice ? handlePairPrint : openPairModal}
+              onClick={openPairModal}
             >
               <Printer size={16} />
-              <span>{pairedInvoice ? "Pair Print" : "Pilih Pasangan"}</span>
+              <span>{pairedInvoice ? "Ganti Pasangan" : "Pilih Pasangan"}</span>
             </button>
           )}
-          <button
-            className="ia-btn ia-btn-print"
-            onClick={handlePrint}
-            disabled={isA5 && !pairedInvoice}
-            title={isA5 && !pairedInvoice ? "Pilih invoice pasangan dulu" : ""}
-            style={isA5 && !pairedInvoice ? { opacity:0.38, cursor:"not-allowed" } : {}}
-          >
+
+          {/* Print — selalu bisa diklik, baik single maupun pair */}
+          <button className="ia-btn ia-btn-print" onClick={handlePrint}>
             <Printer size={16} /><span>Print</span>
           </button>
+
           <button className="ia-btn ia-btn-save" onClick={handleSave}>
             <Save size={16} /><span>Save Invoice</span>
           </button>

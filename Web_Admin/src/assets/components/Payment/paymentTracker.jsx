@@ -39,7 +39,7 @@ const PaymentTracker = () => {
 
   const itemsPerPage = 20;
 
-  const statusOptions = ["All Status", "Paid", "Unpaid", "Overdue"];
+  const statusOptions = ["Semua Status", "Lunas", "Belum Lunas", "Jatuh Tempo"];
   const monthOptions  = [
     "Semua Bulan",
     "Januari","Februari","Maret","April",
@@ -111,8 +111,8 @@ const PaymentTracker = () => {
     // Filter paper_size
     if (selectedPaperSize !== "all" && inv.paper_size !== selectedPaperSize) return false;
 
-    if (selectedStatus !== "All Status") {
-      const m = { Paid:"paid", Unpaid:"unpaid", Overdue:"overdue" };
+    if (selectedStatus !== "Semua Status") {
+      const m = { "Lunas": "paid", "Belum Lunas": "unpaid", "Jatuh Tempo": "overdue" };
       if (inv.computedStatus !== m[selectedStatus]) return false;
     }
     if (selectedMonth !== "Semua Bulan") {
@@ -192,6 +192,8 @@ const PaymentTracker = () => {
   const formatDate = (d) => new Date(d).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
   const getDueDate = (d) => { const x = new Date(d); x.setDate(x.getDate() + 7); return x; };
 
+  const statusLabel = { paid: "Lunas", unpaid: "Belum Lunas", overdue: "Jatuh Tempo" };
+
   const CustomSelect = ({ open, setOpen, options, value, setValue, minWidth }) => (
     <div className="pt-select" onClick={e => e.stopPropagation()}>
       <button
@@ -226,7 +228,7 @@ const PaymentTracker = () => {
       {/* HEADER */}
       <div className="pt-header">
         <div className="pt-header-text">
-          <h2>Payment Tracker</h2>
+          <h2>Pelacak Pembayaran</h2>
           <p>Pantau status pembayaran invoice</p>
         </div>
       </div>
@@ -263,14 +265,14 @@ const PaymentTracker = () => {
         <div className="pt-progress-top">
           <div className="pt-progress-label">
             <h4>
-              Payment Progress
+              Progres Pembayaran
               {selectedPaperSize !== "all" && (
                 <span className={`pt-progress-badge ${selectedPaperSize}`}>
                   {selectedPaperSize === "a5" ? "A5 · Cetak" : "A4 · Kirim"}
                 </span>
               )}
             </h4>
-            <span>Total collection rate</span>
+            <span>Total tingkat penagihan</span>
           </div>
           <div className="pt-progress-rate">
             <h3>{collectionRate}%</h3>
@@ -284,17 +286,17 @@ const PaymentTracker = () => {
           <div className="pt-summary-card paid">
             <CheckCircle2 size={18}/>
             <h3>{paidCount}</h3>
-            <span>Paid</span>
+            <span>Lunas</span>
           </div>
           <div className="pt-summary-card pending">
             <Clock size={18}/>
             <h3>{unpaidCount}</h3>
-            <span>Unpaid</span>
+            <span>Belum Lunas</span>
           </div>
           <div className="pt-summary-card overdue">
             <AlertCircle size={18}/>
             <h3>{overdueCount}</h3>
-            <span>Overdue</span>
+            <span>Jatuh Tempo</span>
           </div>
         </div>
       </div>
@@ -347,7 +349,7 @@ const PaymentTracker = () => {
                   <div className="pt-item-info">
                     <div className="pt-item-title">
                       <span className="pt-inv-number">{inv.invoiceNumber}</span>
-                      <span className={`pt-badge badge-${status}`}>{status}</span>
+                      <span className={`pt-badge badge-${status}`}>{statusLabel[status]}</span>
                       {/* Badge paper size */}
                       <span className={`pt-size-badge size-${paperSize}`}>
                         {paperSize === "a5"
@@ -381,7 +383,7 @@ const PaymentTracker = () => {
                       >
                         {isLoading
                           ? <span style={{ fontSize: "12px" }}>Menyimpan...</span>
-                          : <><Check size={14}/> Mark as Paid</>
+                          : <><Check size={14}/> Tandai Lunas</>
                         }
                       </button>
                     )}

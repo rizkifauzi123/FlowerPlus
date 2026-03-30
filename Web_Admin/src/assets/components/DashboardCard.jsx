@@ -5,7 +5,8 @@ import {
   CheckCircle,
   Users,
   Printer,
-  Send
+  Send,
+  TrendingUp,
 } from "lucide-react";
 
 import {
@@ -30,7 +31,7 @@ const DashboardCards = () => {
 
   const selectedYear    = dashFilter.year;
   const selectedPaper   = dashFilter.paperSize ?? "all";
-  const setSelectedYear = (v) => setDashFilter(prev => ({ ...prev, year: v }));
+  const setSelectedYear  = (v) => setDashFilter(prev => ({ ...prev, year: v }));
   const setSelectedPaper = (v) => setDashFilter(prev => ({ ...prev, paperSize: v }));
 
   const greetings = [
@@ -49,34 +50,34 @@ const DashboardCards = () => {
 
   const hour = new Date().getHours();
   let timeGreeting = "Selamat datang";
-  if (hour < 11) timeGreeting = "Selamat pagi";
+  if (hour < 11)      timeGreeting = "Selamat pagi";
   else if (hour < 15) timeGreeting = "Selamat siang";
   else if (hour < 18) timeGreeting = "Selamat sore";
-  else timeGreeting = "Selamat malam";
+  else                timeGreeting = "Selamat malam";
 
   const onPieEnter = (_, index) => setActiveIndex(index);
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear + i);
   const parseAmount = (amount) => Number(amount || 0);
 
   const getComputedStatus = (inv) => {
-    const today = new Date();
+    const today   = new Date();
     const dueDate = new Date(inv.date);
     dueDate.setDate(dueDate.getDate() + 7);
     if (inv.status === "paid") return "paid";
-    if (today > dueDate) return "overdue";
+    if (today > dueDate)       return "overdue";
     return "unpaid";
   };
 
-  // Filter invoices by paper size
+  /* ── Filter by paper size ── */
   const filteredInvoices = useMemo(() => {
     if (selectedPaper === "all") return invoices;
     return invoices.filter(inv => (inv.paper_size ?? "a4") === selectedPaper);
   }, [invoices, selectedPaper]);
 
-  // Count per paper size for toggle badges
-  const a5Count  = invoices.filter(inv => (inv.paper_size ?? "a4") === "a5").length;
-  const a4Count  = invoices.filter(inv => (inv.paper_size ?? "a4") === "a4").length;
+  const a5Count = invoices.filter(inv => (inv.paper_size ?? "a4") === "a5").length;
+  const a4Count = invoices.filter(inv => (inv.paper_size ?? "a4") === "a4").length;
 
+  /* ── Stat values ── */
   const totalInvoice = filteredInvoices.length;
 
   const totalPaid = filteredInvoices
@@ -87,6 +88,11 @@ const DashboardCards = () => {
     .filter(inv => getComputedStatus(inv) !== "paid")
     .reduce((acc, inv) => acc + parseAmount(inv.amount), 0);
 
+  /* ── Card baru: total nominal semua invoice apapun statusnya ── */
+  const totalKeseluruhan = filteredInvoices.reduce(
+    (acc, inv) => acc + parseAmount(inv.amount), 0
+  );
+
   const totalCustomer = new Set(
     filteredInvoices.map(inv => inv.kepada || inv.customer)
   ).size;
@@ -96,12 +102,12 @@ const DashboardCards = () => {
   const unpaidCount  = filteredInvoices.filter(inv => getComputedStatus(inv) === "unpaid").length;
 
   const paymentData = [
-    { name: "Paid",    value: paidCount,    color: "#3a87a8" },
-    { name: "Unpaid",  value: unpaidCount,  color: "#76c0cf" },
-    { name: "Overdue", value: overdueCount, color: "#0f2b46" },
+    { name: "Lunas",      value: paidCount,    color: "#3a87a8" },
+    { name: "Belum Bayar",value: unpaidCount,  color: "#76c0cf" },
+    { name: "Jatuh Tempo",value: overdueCount, color: "#0f2b46" },
   ];
 
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
 
   const revenueData = months.map((month, index) => {
     const total = filteredInvoices
@@ -110,7 +116,7 @@ const DashboardCards = () => {
         const invDate = new Date(inv.date);
         return (
           invDate.getFullYear() === Number(selectedYear) &&
-          invDate.getMonth() === index &&
+          invDate.getMonth()    === index &&
           getComputedStatus(inv) === "paid"
         );
       })
@@ -121,8 +127,8 @@ const DashboardCards = () => {
   const formatYAxis = (value) => {
     if (value === 0) return "0";
     if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}Jt`;
-    if (value >= 1_000) return `${(value / 1_000).toFixed(1).replace(/\.0$/, "")}rb`;
+    if (value >= 1_000_000)     return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}Jt`;
+    if (value >= 1_000)         return `${(value / 1_000).toFixed(1).replace(/\.0$/, "")}rb`;
     return String(value);
   };
 
@@ -155,7 +161,7 @@ const DashboardCards = () => {
 
       {/* HEADER */}
       <div className="dashboard-header-card">
-        <h1>Dashboard Overview</h1>
+        <h1>Ringkasan Dashboard</h1>
         <p>{timeGreeting}, <strong>{user?.name || "Admin"}</strong> 👋</p>
         <span className="dashboard-motivation">{randomGreeting}</span>
       </div>
@@ -188,8 +194,22 @@ const DashboardCards = () => {
         </button>
       </div>
 
-      {/* STAT CARDS */}
+      {/* STAT CARDS — baris 1: Total Keseluruhan full-width, baris 2: 4 kartu sejajar */}
       <div className="dashboard-cards">
+
+        {/* 1. Total Keseluruhan — full width */}
+        <div className="card navy card-full">
+          <div>
+            <p className="card-title">Total Keseluruhan</p>
+            <h2>Rp {totalKeseluruhan.toLocaleString("id-ID")}</h2>
+            <p className="card-subtitle">Seluruh nilai transaksi invoice</p>
+          </div>
+          <div className="card-icon navy-icon">
+            <TrendingUp size={22} />
+          </div>
+        </div>
+
+        {/* 2. Total Invoice */}
         <div className="card light">
           <div>
             <p className="card-title">Total Invoice</p>
@@ -200,9 +220,10 @@ const DashboardCards = () => {
           </div>
         </div>
 
+        {/* 3. Belum Dibayar */}
         <div className="card dark">
           <div>
-            <p className="card-title">Total Outstanding</p>
+            <p className="card-title">Belum Dibayar</p>
             <h2>Rp {totalOutstanding.toLocaleString("id-ID")}</h2>
           </div>
           <div className="card-icon dark-icon">
@@ -210,9 +231,10 @@ const DashboardCards = () => {
           </div>
         </div>
 
+        {/* 4. Sudah Dibayar */}
         <div className="card blue">
           <div>
-            <p className="card-title">Total Paid</p>
+            <p className="card-title">Sudah Dibayar</p>
             <h2>Rp {totalPaid.toLocaleString("id-ID")}</h2>
           </div>
           <div className="card-icon blue-icon">
@@ -220,15 +242,17 @@ const DashboardCards = () => {
           </div>
         </div>
 
+        {/* 5. Total Pelanggan */}
         <div className="card yellow">
           <div>
-            <p className="card-title">Total Customer</p>
+            <p className="card-title">Total Pelanggan</p>
             <h2>{totalCustomer}</h2>
           </div>
           <div className="card-icon yellow-icon">
             <Users size={20} />
           </div>
         </div>
+
       </div>
 
       {/* CHARTS */}
@@ -239,14 +263,14 @@ const DashboardCards = () => {
           <div className="chart-header">
             <div>
               <h3>
-                Monthly Invoice Revenue
+                Pendapatan Bulanan
                 {selectedPaper !== "all" && (
                   <span className={`dash-chart-badge ${selectedPaper}`}>
                     {selectedPaper === "a5" ? "A5 · Cetak" : "A4 · Kirim"}
                   </span>
                 )}
               </h3>
-              <p>Revenue overview</p>
+              <p>Ringkasan pendapatan yang sudah dibayar</p>
             </div>
             <select
               className="year-select"
@@ -281,14 +305,14 @@ const DashboardCards = () => {
           <div className="chart-header">
             <div>
               <h3>
-                Payment Status
+                Status Pembayaran
                 {selectedPaper !== "all" && (
                   <span className={`dash-chart-badge ${selectedPaper}`}>
                     {selectedPaper === "a5" ? "A5" : "A4"}
                   </span>
                 )}
               </h3>
-              <p>Distribution of invoice status</p>
+              <p>Distribusi status invoice</p>
             </div>
           </div>
 

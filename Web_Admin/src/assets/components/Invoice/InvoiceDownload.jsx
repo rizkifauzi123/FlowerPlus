@@ -1,427 +1,595 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import logo from "../../images/LogoInvoice.png";
+import { getBankInfo } from "../constants/bankInfo";
+
+// ✅ Pakai CSS yang SAMA dengan InvoicePreview — tidak perlu file terpisah
+import "../../Style/Invoice/InvoicePreview.css";
+
+import logo     from "../../images/LogoInvoice.png";
 import ttdStamp from "../../images/TTD1.png";
-import stamp from "../../images/stempel.png";
-import qris from "../../images/QRIS.jpeg";
+import stamp    from "../../images/stempel.png";
+import qris     from "../../images/QRIS.png";
 import { FaGlobe, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import jsPDF        from "jspdf";
+import html2canvas  from "html2canvas";
 
+/* ─────────────────────────────────────────────────────────────
+   InvoicePageBlock  —  struktur IDENTIK dengan renderInvoiceBlock
+   di InvoicePreview.jsx (wrapper .invoice-paper-scalable > .inv-a4-inner)
+───────────────────────────────────────────────────────────── */
+const InvoicePageBlock = ({
+  invoiceData,
+  pageItems,
+  pageIndex,
+  totalPages,
+  startIndex,
+  isSigned,
+  bankInfo,
+  grandTotal,
+  shippingCost,
+  generatedNumber,
+}) => {
+  const isLastPage  = pageIndex === totalPages - 1;
+
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  };
+
+  const allImagesOnPage = pageItems.flatMap((item) => {
+    const imgs = item.preview || item.image;
+    if (!imgs) return [];
+    return Array.isArray(imgs) ? imgs : [imgs];
+  });
+  const hasImages   = allImagesOnPage.length > 0;
+  const isSingleImg = allImagesOnPage.length === 1;
+
+  return (
+    /* ── Wrapper identik InvoicePreview: .invoice-paper.invoice-paper-scalable ── */
+    <div className="invoice-paper invoice-paper-scalable dl-page" style={{ boxShadow: "none" }}>
+      {/* ── Inner identik: .inv-a4-inner ── */}
+      <div className="inv-a4-inner">
+
+        {/* HEADER */}
+        <div className="inv-header">
+          <img src={logo} alt="logo" className="invoice-logo" crossOrigin="anonymous" />
+          <div className="inv-header-right">
+            <h1 className="inv-title">INVOICE</h1>
+            <div className="inv-meta">
+              <div>No. Inv : {invoiceData.invoiceNumber || generatedNumber}</div>
+              <div>Tanggal : {formatDateDisplay(invoiceData.date)}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* CUSTOMER */}
+        <div className="inv-customer" lang="id" spellCheck={false}>
+          <p className="inv-customer-yth">Kepada Yth</p>
+          <h5>{invoiceData.kepada}</h5>
+          <p>{invoiceData.branch}</p>
+        </div>
+
+        {/* TABLE */}
+        <table className="inv-table">
+          <thead>
+            <tr>
+              <th style={{ width: "6%"  }}>No</th>
+              <th style={{ width: "44%" }}>Deskripsi</th>
+              <th style={{ width: "12%" }}>Unit</th>
+              <th style={{ width: "19%" }}>Harga (Rp)</th>
+              <th style={{ width: "19%" }}>Total (Rp)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pageItems.map((item, i) => (
+              <tr key={i}>
+                <td className="inv-td-center">{startIndex + i + 1}</td>
+                <td>{item.desc}</td>
+                <td className="inv-td-center">{item.qty}</td>
+                <td className="inv-td-center">{Number(item.price).toLocaleString("id-ID")}</td>
+                <td className="inv-td-center">
+                  {(Number(item.qty) * Number(item.price)).toLocaleString("id-ID")}
+                </td>
+              </tr>
+            ))}
+
+            {/* Baris gambar */}
+            {hasImages && (
+              <tr className="inv-images-row">
+                <td className="inv-td-center"></td>
+                <td className="inv-images-cell">
+                  <div className={isSingleImg ? "inv-img-wrap-single" : "inv-img-wrap-grid"}>
+                    {allImagesOnPage.map((img, idx) => (
+                      <img
+                        key={idx}
+                        src={img}
+                        className={isSingleImg ? "inv-img-single" : "inv-img-grid"}
+                        alt=""
+                        crossOrigin="anonymous"
+                      />
+                    ))}
+                  </div>
+                </td>
+                <td></td><td></td><td></td>
+              </tr>
+            )}
+
+            {/* Total — hanya di halaman terakhir */}
+            {isLastPage && (
+              <>
+                {shippingCost > 0 && (
+                  <tr className="grand-total-row">
+                    <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
+                    <td className="total-label shipping-label">Ongkos Kirim</td>
+                    <td className="total-value">{shippingCost.toLocaleString("id-ID")}</td>
+                  </tr>
+                )}
+                <tr className="grand-total-row">
+                  <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
+                  <td className="total-label grand-label">Total Tagihan</td>
+                  <td className="total-value grand-value">{grandTotal.toLocaleString("id-ID")}</td>
+                </tr>
+              </>
+            )}
+          </tbody>
+        </table>
+
+        {/* PAYMENT + SIGNATURE — hanya halaman terakhir */}
+        {isLastPage && (
+          <>
+            {/* ── payment-row: class identik dengan Preview ── */}
+            <div className="inv-payment-row">
+              <div className="payment" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                <p className="pay-title">CARA PEMBAYARAN</p>
+                {bankInfo.norek === null ? (
+                  <p className="pay-tunai">PEMBAYARAN TUNAI</p>
+                ) : (
+                  <>
+                    <p className="pay-transfer">TRANSFER KE :</p>
+                    {bankInfo.norek && <p className="pay-rekening">{bankInfo.norek}</p>}
+                    <p className="pay-bank-name">{bankInfo.label}</p>
+                  </>
+                )}
+              </div>
+
+              {isSigned ? (
+                <>
+                  <div className="inv-signed-qris">
+                    <p style={{
+                      fontSize: "10px", fontWeight: "500", color: "#374151",
+                      textAlign: "center", margin: "0 0 4px 0", lineHeight: "1.4",
+                    }}>
+                      Untuk pembayaran bisa<br />Scan QR dibawah
+                    </p>
+                    <img
+                      src={qris}
+                      style={{ width: "150px", height: "150px", objectFit: "contain" }}
+                      alt="QRIS"
+                      crossOrigin="anonymous"
+                    />
+                  </div>
+                  <div className="inv-signed-stamp">
+                    <div className="inv-stamp-wrap">
+                      <p style={{
+                        position: "absolute", bottom: "16px", left: 0, right: 0,
+                        fontSize: "12px", color: "#1f2937", fontWeight: "500",
+                        zIndex: 0, textAlign: "center",
+                      }}>
+                        (Dede Syarifah)
+                      </p>
+                      <img
+                        src={stamp}
+                        style={{ position: "absolute", top: 0, left: 0, width: "160px", objectFit: "contain", opacity: 0.85, zIndex: 1 }}
+                        alt=""
+                        crossOrigin="anonymous"
+                      />
+                      <img
+                        src={ttdStamp}
+                        style={{ position: "absolute", top: 0, left: 0, width: "160px", objectFit: "contain", zIndex: 2 }}
+                        alt=""
+                        crossOrigin="anonymous"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <p style={{
+                  fontSize: "15px", fontWeight: "600", color: "#1f2937",
+                  width: "38%", textAlign: "center", margin: 0, padding: 0,
+                  border: "none", flexShrink: 0, alignSelf: "flex-end", paddingBottom: "2px",
+                }}>
+                  (Dede Syarifah)
+                </p>
+              )}
+            </div>
+
+            {/* FOOTER */}
+            <div className="inv-footer">
+              <div><FaGlobe size={20} /> https://flowerplusofficial.com</div>
+              <div><FaInstagram size={20} /> flowerplusofficial</div>
+              <div><FaWhatsapp size={20} /> 081316835325</div>
+            </div>
+          </>
+        )}
+
+        {/* Page indicator — bukan halaman terakhir */}
+        {!isLastPage && (
+          <div className="inv-page-indicator">
+            Halaman {pageIndex + 1} dari {totalPages}
+          </div>
+        )}
+
+      </div>{/* /inv-a4-inner */}
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────
+   InvoiceA5Block  —  struktur IDENTIK dengan renderA5Block
+   di InvoicePreview.jsx  (.invoice-paper.paper-a5)
+───────────────────────────────────────────────────────────── */
+const InvoiceA5Block = ({ invoiceData, generatedNumber }) => {
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) return "";
+    const d = new Date(dateString);
+    return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
+  };
+
+  const pItems    = (invoiceData?.items || []).slice(0, 1);
+  const pSubtotal = pItems.reduce((a, it) => a + Number(it.qty || 0) * Number(it.price || 0), 0);
+  const pShipping = Number(invoiceData?.shippingCost || 0);
+  const pTotal    = pSubtotal + pShipping;
+  const pBankInfo = getBankInfo(invoiceData?.bank || "");
+  const pHasImg   = pItems.some((it) => it.preview || it.image);
+  const pImgs     = pItems.flatMap((it) => {
+    const src = it.preview || it.image;
+    if (!src) return [];
+    return Array.isArray(src) ? src : [src];
+  });
+
+  return (
+    <div className="invoice-paper paper-a5 dl-page" style={{ boxShadow: "none" }}>
+
+      {/* BODY — flex grow */}
+      <div className="inv-a5-body">
+        <div className="inv-header">
+          <img src={logo} alt="logo" className="invoice-logo" crossOrigin="anonymous" />
+          <div className="inv-header-right">
+            <h1 className="inv-title">INVOICE</h1>
+            <div className="inv-meta">
+              <div>No. Inv : {invoiceData.invoiceNumber || generatedNumber}</div>
+              <div>Tanggal : {formatDateDisplay(invoiceData.date)}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="inv-customer" lang="id" spellCheck={false}>
+          <p className="inv-customer-yth">Kepada Yth</p>
+          <h5>{invoiceData.kepada}</h5>
+          <p>{invoiceData.branch}</p>
+        </div>
+
+        <table className="inv-table">
+          <thead>
+            <tr>
+              <th style={{ width: "6%"  }}>No</th>
+              <th style={{ width: "44%" }}>Deskripsi</th>
+              <th style={{ width: "12%" }}>Unit</th>
+              <th style={{ width: "19%" }}>Harga (Rp)</th>
+              <th style={{ width: "19%" }}>Total (Rp)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pItems.map((item, i) => (
+              <tr key={i} className={!pHasImg ? "inv-row-last-a5" : ""}>
+                <td className="inv-td-center">{i + 1}</td>
+                <td>{item.desc}</td>
+                <td className="inv-td-center">{item.qty}</td>
+                <td className="inv-td-center">{Number(item.price).toLocaleString("id-ID")}</td>
+                <td className="inv-td-center">
+                  {(Number(item.qty) * Number(item.price)).toLocaleString("id-ID")}
+                </td>
+              </tr>
+            ))}
+
+            {pHasImg && (
+              <tr className="inv-images-row">
+                <td className="inv-td-center"></td>
+                <td className="inv-images-cell">
+                  <div className={pImgs.length === 1 ? "inv-img-wrap-single" : "inv-img-wrap-grid"}>
+                    {pImgs.map((src, idx) => (
+                      <img
+                        key={idx} src={src}
+                        className={pImgs.length === 1 ? "inv-img-single" : "inv-img-grid"}
+                        alt=""
+                        crossOrigin="anonymous"
+                      />
+                    ))}
+                  </div>
+                </td>
+                <td></td><td></td><td></td>
+              </tr>
+            )}
+
+            {pShipping > 0 && (
+              <tr className="grand-total-row">
+                <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
+                <td className="total-label shipping-label">Ongkos Kirim</td>
+                <td className="total-value">{pShipping.toLocaleString("id-ID")}</td>
+              </tr>
+            )}
+            <tr className="grand-total-row">
+              <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
+              <td className="total-label grand-label">Total Tagihan</td>
+              <td className="total-value grand-value">{pTotal.toLocaleString("id-ID")}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Payment */}
+        <div className={`inv-payment-row${pBankInfo.norek === null ? " inv-payment-row-tunai" : ""}`}>
+          <div className="payment" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <p className="pay-title">CARA PEMBAYARAN</p>
+            {pBankInfo.norek === null ? (
+              <p className="pay-tunai">PEMBAYARAN TUNAI</p>
+            ) : (
+              <>
+                <p className="pay-transfer">TRANSFER KE :</p>
+                {pBankInfo.norek && <p className="pay-rekening">{pBankInfo.norek}</p>}
+                <p className="pay-bank-name">{pBankInfo.label}</p>
+              </>
+            )}
+          </div>
+          <p style={{
+            fontSize: "14px", fontWeight: "600", color: "#1f2937",
+            width: "38%", textAlign: "center", margin: 0, padding: 0,
+            border: "none", flexShrink: 0, alignSelf: "flex-end", paddingBottom: "2px",
+          }}>
+            (Dede Syarifah)
+          </p>
+        </div>
+      </div>{/* /inv-a5-body */}
+
+      {/* FOOTER — selalu di paling bawah */}
+      <div className="inv-footer">
+        <div><FaGlobe size={15} /> https://flowerplusofficial.com</div>
+        <div><FaInstagram size={15} /> flowerplusofficial</div>
+        <div><FaWhatsapp size={15} /> 081316835325</div>
+      </div>
+    </div>
+  );
+};
+
+/* ─────────────────────────────────────────────────────────────
+   Main component
+───────────────────────────────────────────────────────────── */
 const InvoiceDownload = () => {
-  const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const invoiceType = searchParams.get("type") || "normal";
-  const isSigned = invoiceType === "signed";
+  const { id }           = useParams();
+  const [searchParams]   = useSearchParams();
+  const invoiceType      = searchParams.get("type") || "normal";
+  const isSigned         = invoiceType !== "unsigned";
 
-  const [status, setStatus] = useState("loading"); // loading | rendering | generating | done | error
-  const [invoiceData, setInvoiceData] = useState(null);
-  const invoiceRef = useRef(null);
+  const [status,          setStatus]          = useState("loading");
+  const [invoiceData,     setInvoiceData]     = useState(null);
+  const [generatedNumber, setGeneratedNumber] = useState("");
 
-  /* =============================
-     STEP 1: Fetch invoice data
-  ============================== */
+  /* ── Fetch invoice ── */
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/invoices/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Invoice tidak ditemukan");
+      .then((res) => {
+        if (!res.ok) throw new Error("not found");
         return res.json();
       })
-      .then(data => {
-        setInvoiceData(data.data || data);
-        setStatus("rendering"); // ← render DOM dulu, baru generate
+      .then((data) => {
+        const inv = data.data || data;
+        setInvoiceData(inv);
+        if (!inv.invoiceNumber) {
+          const ps = inv.paper_size || "a4";
+          fetch(`http://127.0.0.1:8000/api/invoices/preview-number?paper_size=${ps}`)
+            .then((r) => r.json())
+            .then((d) => setGeneratedNumber(d.invoiceNumber))
+            .catch(() => {});
+        }
+        setStatus("rendering");
       })
       .catch(() => setStatus("error"));
   }, [id]);
 
-  /* =============================
-     STEP 2: Tunggu render selesai, baru generate PDF
-  ============================== */
+  /* ── Generate PDF setelah DOM render ── */
   useEffect(() => {
-    if (status !== "rendering") return;
+    if (status !== "rendering" || !invoiceData) return;
 
     const timer = setTimeout(async () => {
       setStatus("generating");
-
       try {
-        const pageElements = invoiceRef.current?.querySelectorAll(".dl-invoice-paper");
+        const isA5 = invoiceData.paper_size === "a5";
 
-        if (!pageElements || pageElements.length === 0) {
-          console.error("Elemen tidak ditemukan");
-          setStatus("error");
-          return;
-        }
+        const pageElements = Array.from(document.querySelectorAll(".dl-page"));
+        if (pageElements.length === 0) { setStatus("error"); return; }
 
-        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: [210, 297] });
 
         for (let i = 0; i < pageElements.length; i++) {
-          const canvas = await html2canvas(pageElements[i], {
-            scale: 1.5,
-            useCORS: true,
-            allowTaint: true,
+          const el = pageElements[i];
+
+          // ── Reset transform sementara supaya html2canvas dapat ukuran asli ──
+          const prevTransform    = el.style.transform;
+          const prevMarginBottom = el.style.marginBottom;
+          el.style.transform    = "";
+          el.style.marginBottom = "";
+
+          const canvas = await html2canvas(el, {
+            scale:           3,
+            useCORS:         true,
+            allowTaint:      true,
             backgroundColor: "#ffffff",
-            logging: false,
-            scrollX: 0,
-            scrollY: 0,
+            logging:         false,
+            width:           el.scrollWidth,
+            height:          el.scrollHeight,
+            windowWidth:     el.scrollWidth,
           });
 
-          const imgData   = canvas.toDataURL("image/jpeg", 0.85);
-          const pageWidth = 210;
-          const imgHeight = (canvas.height * pageWidth) / canvas.width;
+          el.style.transform    = prevTransform;
+          el.style.marginBottom = prevMarginBottom;
+
+          const imgData = canvas.toDataURL("image/jpeg", 0.95);
+          const pageW   = 210;
+          const pageH   = isA5
+            ? 148.5
+            : Math.min(297, Math.round((canvas.height * 210) / canvas.width));
 
           if (i === 0) {
-            pdf.internal.pageSize.width  = pageWidth;
-            pdf.internal.pageSize.height = imgHeight;
+            pdf.internal.pageSize.width  = pageW;
+            pdf.internal.pageSize.height = pageH;
           } else {
-            pdf.addPage([pageWidth, imgHeight]);
+            pdf.addPage([pageW, pageH]);
           }
-
-          pdf.addImage(imgData, "JPEG", 0, 0, pageWidth, imgHeight);
+          pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
         }
 
-        const invNo = (invoiceData.invoiceNumber || "invoice").split("/").pop();
-        pdf.save(`Invoice_${invNo}.pdf`);
+        /* ── Penamaan file identik InvoicePreview ── */
+        const sanitize   = (text) =>
+          String(text || "").replace(/[\/\\:*?"<>|]/g, "").replace(/\s+/g, "_");
+        const branch     = sanitize(invoiceData.branch);
+        const bank       = sanitize(invoiceData.bank || "BANK");
+        const invoiceNo  = (invoiceData.invoiceNumber || generatedNumber || "").split("/")[0];
+        const customer   = sanitize(invoiceData.kepada).slice(0, 30);
+        const d          = invoiceData.date ? new Date(invoiceData.date) : new Date();
+        const tanggal    = `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
+        const sizeSuffix = isA5 ? "_A5" : "_A4";
+        const ttdSuffix  = !isA5 && isSigned ? "_TTD" : "";
+
+        pdf.save(`FP_${branch}_${bank}_${invoiceNo}_${customer}_${tanggal}${ttdSuffix}${sizeSuffix}.pdf`);
         setStatus("done");
 
       } catch (err) {
-        console.error("Generate PDF error:", err);
+        console.error("PDF error:", err);
         setStatus("error");
       }
-    }, 1500); // tunggu DOM + gambar selesai render
+    }, 1800);
 
     return () => clearTimeout(timer);
   }, [status, invoiceData]);
 
-  /* =============================
-     SPLIT PAGES BY IMAGE COUNT
-  ============================== */
-  const MAX_IMAGES_PER_PAGE = 6;
-  const pages = [];
-
-  if (invoiceData) {
-    let currentPage = [];
-    let imageCount  = 0;
-
-    (invoiceData.items || []).forEach(item => {
-      const count = Array.isArray(item.preview)
-        ? item.preview.length
-        : item.preview ? 1 : 0;
-
-      if (imageCount + count > MAX_IMAGES_PER_PAGE && currentPage.length) {
-        pages.push(currentPage);
-        currentPage = [];
-        imageCount  = 0;
-      }
-      currentPage.push(item);
-      imageCount += count;
-    });
-
-    if (currentPage.length) pages.push(currentPage);
-  }
-
-  const total = (invoiceData?.items || []).reduce(
-    (acc, item) => acc + Number(item.qty || 0) * Number(item.price || 0), 0
-  );
-
-  /* =============================
-     REUSABLE STATUS SCREEN
-  ============================== */
-  const StatusScreen = ({ icon, title, subtitle, color, spin }) => (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "#f0f4f8",
-      fontFamily: "'Segoe UI', sans-serif",
-      gap: 16,
-    }}>
-      {spin ? (
-        <>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          <div style={{
-            width: 56, height: 56, borderRadius: "50%",
-            border: "4px solid #e2e8f0",
-            borderTopColor: "#2c4775",
-            animation: "spin 0.8s linear infinite",
-          }} />
-        </>
-      ) : (
-        <div style={{
-          width: 72, height: 72, borderRadius: "50%",
-          background: color + "20",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 36,
-        }}>
-          {icon}
-        </div>
-      )}
-      <h2 style={{ margin: 0, color: "#1f2937", fontSize: 20 }}>{title}</h2>
-      <p style={{ margin: 0, color: "#6b7280", fontSize: 14 }}>{subtitle}</p>
-    </div>
-  );
-
-  /* =============================
-     STATUS SCREENS
-  ============================== */
-  if (status === "loading") return (
-    <StatusScreen spin
-      color="#3b82f6"
-      title="Memuat invoice..."
-      subtitle="Mohon tunggu sebentar"
-    />
-  );
-
-  if (status === "done") return (
-    <StatusScreen
-      icon="✅"
-      color="#10b981"
-      title="Invoice berhasil diunduh!"
-      subtitle="File PDF sudah tersimpan di perangkat Anda"
-    />
+  /* ── Status screens ── */
+  const Spinner = () => (
+    <>
+      <style>{`@keyframes dl-spin { to { transform: rotate(360deg); } }`}</style>
+      <div style={{
+        width: 52, height: 52, borderRadius: "50%",
+        border: "4px solid #e2e8f0", borderTopColor: "#2c4775",
+        animation: "dl-spin 0.8s linear infinite",
+      }} />
+    </>
   );
 
   if (status === "error") return (
-    <StatusScreen
-      icon="❌"
-      color="#ef4444"
-      title="Invoice tidak ditemukan"
-      subtitle="Link mungkin sudah tidak valid atau terjadi kesalahan"
-    />
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f0f4f8", gap: 16, fontFamily: "'Segoe UI',sans-serif" }}>
+      <div style={{ fontSize: 48 }}>❌</div>
+      <h2 style={{ margin: 0, color: "#1f2937" }}>Invoice tidak ditemukan</h2>
+      <p style={{ margin: 0, color: "#6b7280" }}>Link mungkin sudah tidak valid</p>
+    </div>
   );
 
-  /* =============================
-     RENDERING + GENERATING — Invoice paper + spinner
-  ============================== */
-  if (status === "rendering" || status === "generating") return (
+  if (status === "done") return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f0f4f8", gap: 16, fontFamily: "'Segoe UI',sans-serif" }}>
+      <div style={{ fontSize: 48 }}>✅</div>
+      <h2 style={{ margin: 0, color: "#1f2937" }}>Invoice berhasil diunduh!</h2>
+      <p style={{ margin: 0, color: "#6b7280" }}>File PDF sudah tersimpan di perangkat Anda</p>
+    </div>
+  );
+
+  if (status === "loading") return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f0f4f8", gap: 16, fontFamily: "'Segoe UI',sans-serif" }}>
+      <Spinner />
+      <h2 style={{ margin: 0, color: "#1f2937" }}>Memuat invoice...</h2>
+      <p style={{ margin: 0, color: "#6b7280" }}>Mohon tunggu sebentar</p>
+    </div>
+  );
+
+  /* ── rendering / generating ── */
+  const isA5         = invoiceData.paper_size === "a5";
+  const allItems     = invoiceData?.items || [];
+  const subtotal     = allItems.reduce((a, it) => a + Number(it.qty || 0) * Number(it.price || 0), 0);
+  const shippingCost = Number(invoiceData.shippingCost || 0);
+  const grandTotal   = subtotal + shippingCost;
+  const bankInfo     = getBankInfo(invoiceData.bank || "");
+
+  const MAX_ITEMS_PER_PAGE = 10;
+  const pages = isA5
+    ? [allItems.slice(0, 1)]
+    : allItems.reduce((acc, item, i) => {
+        const pi = Math.floor(i / MAX_ITEMS_PER_PAGE);
+        if (!acc[pi]) acc[pi] = [];
+        acc[pi].push(item);
+        return acc;
+      }, []);
+
+  return (
     <>
-      {/* Spinner overlay */}
+      {/* ── Spinner overlay ── */}
       <div style={{
         position: "fixed", inset: 0,
         background: "rgba(240,244,248,0.97)",
         display: "flex", flexDirection: "column",
         alignItems: "center", justifyContent: "center",
-        zIndex: 9999, fontFamily: "'Segoe UI', sans-serif", gap: 16,
+        zIndex: 9999, fontFamily: "'Segoe UI',sans-serif", gap: 16,
       }}>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        <div style={{
-          width: 56, height: 56, borderRadius: "50%",
-          border: "4px solid #e2e8f0",
-          borderTopColor: "#2c4775",
-          animation: "spin 0.8s linear infinite",
-        }} />
+        <Spinner />
         <h2 style={{ margin: 0, color: "#1f2937", fontSize: 18 }}>Menyiapkan PDF...</h2>
         <p style={{ margin: 0, color: "#6b7280", fontSize: 13 }}>File akan otomatis terunduh</p>
       </div>
 
-      {/* Invoice paper — fixed dalam viewport agar html2canvas bisa capture */}
+      {/*
+        ── Invoice paper untuk di-capture oleh html2canvas ──
+        Dirender di luar viewport (left: -9999px) tapi TIDAK opacity:0
+        agar computed styles terbaca dengan benar oleh html2canvas.
+        Pakai class yang SAMA dengan InvoicePreview supaya hasil identik.
+      */}
       <div
-        ref={invoiceRef}
+        aria-hidden="true"
         style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: "210mm",
-          opacity: 0,
-          pointerEvents: "none",
-          zIndex: -1,
-          background: "#fff",
+          position:   "fixed",
+          top:        0,
+          left:       "-9999px",
+          width:      "210mm",
+          zIndex:     -1,
+          background: "#ffffff",
+          visibility: "visible",
         }}
       >
-        {pages.map((pageItems, pageIndex) => {
-          const isLastPage = pageIndex === pages.length - 1;
-          const startIndex = pages.slice(0, pageIndex).reduce((s, p) => s + p.length, 0);
-
-          return (
-            <div
-              className="dl-invoice-paper"
-              key={pageIndex}
-              style={{
-                width: "210mm",
-                minWidth: "210mm",
-                background: "#fff",
-                padding: "40px",
-                boxSizing: "border-box",
-                fontFamily: "'Segoe UI', sans-serif",
-                color: "#1f2937",
-              }}
-            >
-              {/* HEADER */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 25 }}>
-                <img src={logo} alt="logo" style={{ height: 120, objectFit: "contain" }} crossOrigin="anonymous" />
-                <h1 style={{ fontSize: 48, fontWeight: 700, color: "#2c4775", margin: 0 }}>INVOICE</h1>
-              </div>
-
-              {/* META */}
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginBottom: 20 }}>
-                {[
-                  `No. Inv : ${invoiceData.invoiceNumber}`,
-                  `Tanggal : ${invoiceData.date}`
-                ].map((t, i) => (
-                  <div key={i} style={{
-                    background: "#3f5f9b", color: "white",
-                    padding: "8px 14px", fontSize: 13,
-                  }}>{t}</div>
-                ))}
-              </div>
-
-              {/* CUSTOMER */}
-              <div style={{
-                background: "#3f5f9b", color: "white",
-                padding: 20, marginBottom: 20,
-              }}>
-                <p style={{ margin: "4px 0", fontSize: 14 }}>Kepada Yth :</p>
-                <p style={{ margin: "4px 0", fontSize: 14 }}>{invoiceData.kepada}</p>
-                <p style={{ margin: "4px 0", fontSize: 14 }}>{invoiceData.branch}</p>
-              </div>
-
-              {/* TABLE */}
-              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 25 }}>
-                <thead>
-                  <tr>
-                    {["No", "Deskripsi", "Unit", "Harga", "Total"].map(h => (
-                      <th key={h} style={{
-                        background: "#2c4775", color: "white",
-                        padding: 10, border: "1px solid #000",
-                        fontSize: 13, textAlign: "center",
-                      }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {pageItems.map((item, i) => (
-                    <tr key={i}>
-                      <td style={{ padding: 10, border: "1px solid #000", textAlign: "center", fontSize: 13 }}>
-                        {startIndex + i + 1}
-                      </td>
-                      <td style={{ padding: 10, border: "1px solid #000", fontSize: 13 }}>
-                        {item.desc}
-                        {(item.preview || item.image) && (
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-                            {(Array.isArray(item.preview || item.image)
-                              ? (item.preview || item.image)
-                              : [item.preview || item.image]
-                            ).map((img, idx) => (
-                              <img
-                                key={idx} src={img}
-                                style={{ width: 70, height: 70, objectFit: "cover", borderRadius: 4 }}
-                                crossOrigin="anonymous"
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </td>
-                      <td style={{ padding: 10, border: "1px solid #000", textAlign: "center", fontSize: 13 }}>
-                        {item.qty}
-                      </td>
-                      <td style={{ padding: 10, border: "1px solid #000", textAlign: "center", fontSize: 13 }}>
-                        {Number(item.price).toLocaleString("id-ID")}
-                      </td>
-                      <td style={{ padding: 10, border: "1px solid #000", textAlign: "center", fontSize: 13 }}>
-                        {(item.qty * item.price).toLocaleString("id-ID")}
-                      </td>
-                    </tr>
-                  ))}
-
-                  {isLastPage && (
-                    <tr>
-                      <td colSpan={3} style={{ border: "none" }} />
-                      <td style={{
-                        padding: 10, border: "1px solid #000",
-                        background: "#3f5f9b", color: "white",
-                        textAlign: "center", fontWeight: 600, fontSize: 13,
-                      }}>Total</td>
-                      <td style={{
-                        padding: 10, border: "1px solid #000",
-                        textAlign: "center", fontWeight: 600, fontSize: 13,
-                      }}>
-                        {total.toLocaleString("id-ID")}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-
-              {/* LAST PAGE — PAYMENT + FOOTER */}
-              {isLastPage && (
-                <>
-                  <div style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginTop: 30,
-                    marginBottom: 20,
-                  }}>
-                    {/* PAYMENT */}
-                    <div>
-                      <h4 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px" }}>CARA PEMBAYARAN</h4>
-                      <p style={{ margin: "4px 0", fontSize: 14 }}>TRANSFER KE :</p>
-                      <h2 style={{ fontSize: 22, fontWeight: 700, margin: "10px 0" }}>A.C. 118 00 1022 970 5</h2>
-                      <p style={{ margin: "4px 0", fontSize: 14 }}>BANK MANDIRI a.n Dede Syarifah</p>
-                    </div>
-
-                    {/* QRIS + TTD (hanya jika signed) */}
-                    {isSigned && (
-                      <>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                          <img
-                            src={qris}
-                            style={{ width: 200, height: 300, objectFit: "contain" }}
-                            crossOrigin="anonymous"
-                          />
-                          <p style={{ fontSize: 11, color: "#6b7280" }}>Scan QRIS</p>
-                        </div>
-
-                        <div style={{ position: "relative", width: 200, height: 180, textAlign: "center" }}>
-                          <p style={{
-                            position: "absolute", bottom: 20, left: 0, right: 0,
-                            fontSize: 13, fontWeight: 500, zIndex: 0,
-                          }}>(Dede Syarifah)</p>
-                          <img
-                            src={stamp}
-                            style={{ position: "absolute", top: 0, left: 0, width: 200, objectFit: "contain", opacity: 0.85, zIndex: 1 }}
-                            crossOrigin="anonymous"
-                          />
-                          <img
-                            src={ttdStamp}
-                            style={{ position: "absolute", top: 0, left: 0, width: 200, objectFit: "contain", zIndex: 2 }}
-                            crossOrigin="anonymous"
-                          />
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* FOOTER */}
-                  <div style={{
-                    marginTop: 40,
-                    display: "flex",
-                    justifyContent: "center",
-                    fontWeight: 600,
-                    fontSize: 14,
-                    color: "#2c4775",
-                    gap: 80,
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <FaGlobe size={20} /> https://flowerplusofficial.com/
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <FaInstagram size={20} /> flowerplusofficial
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <FaWhatsapp size={20} /> 081316835325
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          );
-        })}
+        {isA5 ? (
+          /* ── A5: wrapper .inv-a5-sheet identik Preview ── */
+          <div className="inv-a5-sheet">
+            <InvoiceA5Block
+              invoiceData={invoiceData}
+              generatedNumber={generatedNumber}
+            />
+          </div>
+        ) : (
+          /* ── A4: wrapper background putih, tanpa padding tambahan ── */
+          <div style={{ background: "#ffffff", padding: 0 }}>
+            {pages.map((pageItems, pageIndex) => (
+              <InvoicePageBlock
+                key={pageIndex}
+                invoiceData={invoiceData}
+                pageItems={pageItems}
+                pageIndex={pageIndex}
+                totalPages={pages.length}
+                startIndex={pageIndex * MAX_ITEMS_PER_PAGE}
+                isSigned={isSigned}
+                bankInfo={bankInfo}
+                grandTotal={grandTotal}
+                shippingCost={shippingCost}
+                generatedNumber={generatedNumber}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
-
-  return null;
 };
 
 export default InvoiceDownload;
