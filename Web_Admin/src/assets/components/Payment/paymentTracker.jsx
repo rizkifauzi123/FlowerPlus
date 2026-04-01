@@ -57,7 +57,7 @@ const PaymentTracker = () => {
   const handleMarkPaid = async (inv) => {
     setLoadingId(inv.id);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/invoices/${inv.id}`, {
+      const response = await fetch(`https://api.flowerplusofficial.com/api/invoices/${inv.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({ ...inv, status: "paid" }),
@@ -78,7 +78,7 @@ const PaymentTracker = () => {
   const handleCancelMark = async (inv) => {
     setLoadingId(inv.id);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/invoices/${inv.id}`, {
+      const response = await fetch(`https://api.flowerplusofficial.com/api/invoices/${inv.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({ ...inv, status: "unpaid" }),
@@ -255,7 +255,7 @@ const PaymentTracker = () => {
           onClick={() => setSelectedPaperSize("a4")}
         >
           <Send size={14} />
-          <span>A4 · Kirim</span>
+          <span>A4 · PDF</span>
           <span className="pt-paper-count a4">{a4Count}</span>
         </button>
       </div>

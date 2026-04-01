@@ -189,7 +189,7 @@ const DashboardCards = () => {
           onClick={() => setSelectedPaper("a4")}
         >
           <Send size={14} />
-          <span>A4 · Kirim</span>
+          <span>A4 · PDF</span>
           <span className="dash-paper-count a4">{a4Count}</span>
         </button>
       </div>

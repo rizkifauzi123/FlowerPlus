@@ -36,7 +36,7 @@ const Profile = () => {
     formData.append("_method", "PUT");
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/users/${user.id}`, {
+      const response = await fetch(`https://api.flowerplusofficial.com/api/users/${user.id}`, {
         method: "POST",
         body: formData,
       });
@@ -78,7 +78,7 @@ const Profile = () => {
       formData.append("_method", "PUT");
       formData.append("remove_avatar", "true");
 
-      const response = await fetch(`http://127.0.0.1:8000/api/users/${user.id}`, {
+      const response = await fetch(`https://api.flowerplusofficial.com/api/users/${user.id}`, {
         method: "POST",
         body: formData,
       });

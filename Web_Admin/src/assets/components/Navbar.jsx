@@ -8,15 +8,9 @@ import {
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 
-/* ─────────────────────────────────────────
-   Portal wrapper
-───────────────────────────────────────── */
 const Portal = ({ children }) =>
   createPortal(children, document.body);
 
-/* ─────────────────────────────────────────
-   Logout Modal
-───────────────────────────────────────── */
 const LogoutModal = ({ onCancel, onConfirm }) => (
   <Portal>
     <div
@@ -39,12 +33,8 @@ const LogoutModal = ({ onCancel, onConfirm }) => (
             You'll need to sign in again to continue.
           </p>
           <div className="logout-actions">
-            <button className="logout-cancel" onClick={onCancel}>
-              Cancel
-            </button>
-            <button className="logout-confirm" onClick={onConfirm}>
-              Yes, Logout
-            </button>
+            <button className="logout-cancel" onClick={onCancel}>Cancel</button>
+            <button className="logout-confirm" onClick={onConfirm}>Yes, Logout</button>
           </div>
         </div>
       </div>
@@ -52,9 +42,6 @@ const LogoutModal = ({ onCancel, onConfirm }) => (
   </Portal>
 );
 
-/* ─────────────────────────────────────────
-   Loading Screen
-───────────────────────────────────────── */
 const LogoutLoading = () => (
   <Portal>
     <div className="logout-loading">
@@ -64,9 +51,6 @@ const LogoutLoading = () => (
   </Portal>
 );
 
-/* ─────────────────────────────────────────
-   Navbar
-───────────────────────────────────────── */
 const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
   const [userOpen, setUserOpen]           = useState(false);
   const [notifOpen, setNotifOpen]         = useState(false);
@@ -80,15 +64,29 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
   const {
     overdueCount,
     overdueInvoices,
+    invoices,         // ← ambil semua invoices dari context
     user,
     admins,
     setFocusedInvoiceId
   } = useApp();
 
+  // Invoice yang belum dibayar (belum diceklis) dan TIDAK kadaluarsa
+  const overdueIds     = new Set(overdueInvoices.map(inv => inv.id));
+  const unpaidInvoices = (invoices || []).filter(
+    inv => !inv.isPaid && !overdueIds.has(inv.id)
+  );
+
+  // Gabungkan: overdue duluan, lalu unpaid
+  const allNotifInvoices = [
+    ...overdueInvoices.map(inv => ({ ...inv, _status: "overdue" })),
+    ...unpaidInvoices.map(inv => ({ ...inv, _status: "unpaid" })),
+  ];
+
+  const totalNotifCount = allNotifInvoices.length;
+
   const otherAdmins = admins.filter(a => a.name !== user?.name);
   const extraCount  = otherAdmins.length - 2;
 
-  /* close dropdowns on outside click */
   useEffect(() => {
     const handler = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
@@ -98,7 +96,6 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  /* lock body scroll when modal is open */
   useEffect(() => {
     document.body.style.overflow = logoutConfirm ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -156,8 +153,8 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
               title="Notifikasi"
             >
               <Bell size={18} />
-              {overdueCount > 0 && (
-                <span className="nb-badge">{overdueCount > 9 ? "9+" : overdueCount}</span>
+              {totalNotifCount > 0 && (
+                <span className="nb-badge">{totalNotifCount > 9 ? "9+" : totalNotifCount}</span>
               )}
             </button>
 
@@ -166,28 +163,36 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
                 <div className="nb-panel-header">
                   <div className="nb-panel-title">
                     <AlertCircle size={14} />
-                    <span>Overdue Invoices</span>
+                    <span>Invoice Perlu Perhatian</span>
                   </div>
-                  {overdueCount > 0 && (
-                    <span className="nb-count-pill">{overdueCount}</span>
+                  {totalNotifCount > 0 && (
+                    <span className="nb-count-pill">{totalNotifCount}</span>
                   )}
                 </div>
 
                 <div className="nb-notif-body">
-                  {overdueInvoices.length === 0 ? (
+                  {allNotifInvoices.length === 0 ? (
                     <div className="nb-notif-empty">
                       <span className="nb-empty-icon">🎉</span>
                       <span>Semua invoice lunas!</span>
                     </div>
                   ) : (
-                    overdueInvoices.map((inv) => (
+                    allNotifInvoices.map((inv) => (
                       <div key={inv.id} className="nb-notif-item">
-                        <div className="nb-notif-dot" />
+                        <div className={`nb-notif-dot ${inv._status === "overdue" ? "nb-notif-dot--overdue" : "nb-notif-dot--unpaid"}`} />
                         <div className="nb-notif-info">
                           <span className="nb-notif-name">{inv.customer}</span>
                           <span className="nb-notif-meta">
                             <span className="nb-notif-num">{inv.invoiceNumber}</span>
-                            <span className="nb-notif-late">· Terlambat {getDaysLate(inv)} hari</span>
+                            {inv._status === "overdue" ? (
+                              <span className="nb-notif-late nb-notif-late--overdue">
+                                · Terlambat {getDaysLate(inv)} hari
+                              </span>
+                            ) : (
+                              <span className="nb-notif-late nb-notif-late--unpaid">
+                                · Belum dibayar
+                              </span>
+                            )}
                           </span>
                         </div>
                         <button className="nb-notif-cta" onClick={() => handleViewInvoice(inv)}>
@@ -198,7 +203,7 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
                   )}
                 </div>
 
-                {overdueInvoices.length > 0 && (
+                {allNotifInvoices.length > 0 && (
                   <div className="nb-panel-footer">
                     <button
                       className="nb-view-all"
@@ -232,11 +237,9 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
               <ChevronDown size={13} className={`nb-chevron ${userOpen ? "rotated" : ""}`} />
             </button>
 
-            {/* ── PROFILE CARD DROPDOWN ── */}
             {userOpen && (
               <div className="nb-profile-card">
                 <div className="nb-profile-card-arrow" />
-
                 <div className="nb-pc-header">
                   <div className="nb-pc-avatar-wrap">
                     <div className="nb-pc-avatar">
@@ -246,7 +249,6 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
                     </div>
                     <span className="nb-pc-online-dot" />
                   </div>
-
                   <div className="nb-pc-info">
                     <span className="nb-pc-name">{user?.name  || "Admin"}</span>
                     <span className="nb-pc-role">
@@ -256,16 +258,13 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
                     <span className="nb-pc-email">{user?.email || "admin@flowerplus.com"}</span>
                   </div>
                 </div>
-
                 <div className="nb-pc-status-row">
                   <span className="nb-pc-status-badge">
                     <span className="nb-pc-status-dot" />
                     Active Account
                   </span>
                 </div>
-
                 <div className="nb-pc-divider" />
-
                 <button
                   className="nb-pc-edit-btn"
                   onClick={() => { navigate("/profile"); setUserOpen(false); }}
@@ -273,9 +272,7 @@ const Navbar = ({ onToggleDesktop, onToggleMobile }) => {
                   <Pencil size={14} />
                   Edit Profile
                 </button>
-
                 <div className="nb-pc-divider" />
-
                 <button
                   className="nb-pc-logout-btn"
                   onClick={() => { setUserOpen(false); setLogoutConfirm(true); }}

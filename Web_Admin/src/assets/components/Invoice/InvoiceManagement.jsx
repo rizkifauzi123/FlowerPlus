@@ -270,7 +270,12 @@ const InvoiceManagement = () => {
       if (inv.status.toLowerCase() !== (statusMap[selectedStatus] || selectedStatus.toLowerCase())) return false;
     }
     if (selectedDate && inv.date !== selectedDate) return false;
-    if (searchTerm && !inv.customer.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      const matchCustomer = inv.customer.toLowerCase().includes(term);
+      const matchInvoiceNumber = inv.invoiceNumber.toLowerCase().includes(term);
+      if (!matchCustomer && !matchInvoiceNumber) return false;
+    }
     return true;
   });
 
@@ -297,7 +302,7 @@ const InvoiceManagement = () => {
   /* ── DELETE ── */
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/invoices/${invoiceToDelete}`, {
+      const response = await fetch(`https://api.flowerplusofficial.com/api/invoices/${invoiceToDelete}`, {
         method: "DELETE",
         headers: { "Accept": "application/json" },
       });
@@ -509,7 +514,7 @@ const InvoiceManagement = () => {
           <div className="search-wrap">
             <Search size={14} className="search-icon" />
             <input
-              type="text" placeholder="Cari pelanggan..."
+              type="text" placeholder="Cari pelanggan / no. invoice..."
               className="search-input" value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -526,131 +531,133 @@ const InvoiceManagement = () => {
 
       {/* TABLE */}
       <div className="invoice-table-card">
-        <table>
-          <thead>
-            <tr>
-              <th style={{ width: "48px", textAlign: "center" }}>No</th>
-              <th>Invoice</th>
-              <th>Tipe</th>
-              <th>Pelanggan</th>
-              <th>Bank</th>
-              <th>Jumlah</th>
-              <th>Jatuh Tempo</th>
-              <th>Status</th>
-              <th style={{ textAlign: "right" }}>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentInvoices.length === 0 ? (
+        <div className="invoice-table-scroll">
+          <table>
+            <thead>
               <tr>
-                <td colSpan={9} className="empty-row">
-                  <div className="empty-state">
-                    <span className="empty-icon">📄</span>
-                    <span>Tidak ada invoice ditemukan</span>
-                  </div>
-                </td>
+                <th style={{ width: "48px", textAlign: "center" }}>No</th>
+                <th>Invoice</th>
+                <th>Tipe</th>
+                <th>Pelanggan</th>
+                <th>Bank</th>
+                <th>Jumlah</th>
+                <th>Jatuh Tempo</th>
+                <th>Status</th>
+                <th style={{ textAlign: "right" }}>Aksi</th>
               </tr>
-            ) : (
-              currentInvoices.map((item, index) => (
-                <tr key={index}>
-                  <td style={{ textAlign: "center", fontWeight: 700, color: "#94a3b8", fontSize: "12px" }}>
-                    {indexOfFirstItem + index + 1}
-                  </td>
-                  <td className="invoice-id">{item.invoiceNumber}</td>
-                  <td><PaperBadge size={item.paper_size} /></td>
-                  <td>
-                    <strong>{item.customer}</strong>
-                    <span>{item.email}</span>
-                  </td>
-                  <td className="bank-cell">{item.bank}</td>
-                  <td className="amount-cell">Rp {Number(item.amount).toLocaleString("id-ID")}</td>
-                  <td className="date-cell">{item.date}</td>
-                  <td>
-                    <span className={`badge ${item.status}`}>
-                      {getBadgeLabel(item.status)}
-                    </span>
-                  </td>
-                  <td className="action-cell">
-                    <button className="action-btn" onClick={() => toggleDropdown(index)}>
-                      <MoreVertical size={16} />
-                    </button>
-
-                    {activeDropdown === index && (
-                      <div className="action-dropdown">
-
-                        <button className="dropdown-item"
-                          onClick={() => navigate(
-                            `/invoice/preview/${item.id}?type=${item.type || "normal"}&paper_size=${item.paper_size ?? "a4"}`
-                          )}>
-                          <Eye size={14} /> Lihat Detail
-                        </button>
-
-                        <button className="dropdown-item"
-                          onClick={() => navigate(`/invoice/edit/${item.id}?type=${item.type || "normal"}`)}>
-                          <Pencil size={14} /> Ubah
-                        </button>
-
-                        {/* Share sub-dropdown */}
-                        <div className="share-sub-wrap">
-                          <button
-                            className="dropdown-item"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShareDropdown(prev => prev === index ? null : index);
-                            }}
-                          >
-                            <Share2 size={14} /> Bagikan
-                            <ChevronDown
-                              size={12}
-                              style={{
-                                marginLeft: "auto",
-                                transform: shareDropdown === index ? "rotate(180deg)" : "none",
-                                transition: "transform 0.2s",
-                              }}
-                            />
-                          </button>
-
-                          {shareDropdown === index && (
-                            <div className="share-sub-menu">
-                              <button
-                                className="share-sub-item share-sub-wa"
-                                onClick={() => {
-                                  handleShareWhatsApp(item);
-                                  setActiveDropdown(null);
-                                  setShareDropdown(null);
-                                }}
-                              >
-                                <FaWhatsapp size={13} /> WhatsApp
-                              </button>
-                              <button
-                                className="share-sub-item share-sub-email"
-                                onClick={() => {
-                                  handleShareEmail(item);
-                                  setActiveDropdown(null);
-                                  setShareDropdown(null);
-                                }}
-                              >
-                                <Mail size={13} /> Email
-                              </button>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="dropdown-divider" />
-
-                        <button className="dropdown-item delete"
-                          onClick={() => { setInvoiceToDelete(item.id); setActiveDropdown(null); }}>
-                          <Trash2 size={14} /> Hapus
-                        </button>
-
-                      </div>
-                    )}
+            </thead>
+            <tbody>
+              {currentInvoices.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="empty-row">
+                    <div className="empty-state">
+                      <span className="empty-icon">📄</span>
+                      <span>Tidak ada invoice ditemukan</span>
+                    </div>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                currentInvoices.map((item, index) => (
+                  <tr key={index}>
+                    <td style={{ textAlign: "center", fontWeight: 700, color: "#94a3b8", fontSize: "12px" }}>
+                      {indexOfFirstItem + index + 1}
+                    </td>
+                    <td className="invoice-id">{item.invoiceNumber}</td>
+                    <td><PaperBadge size={item.paper_size} /></td>
+                    <td>
+                      <strong>{item.customer}</strong>
+                      <span>{item.email}</span>
+                    </td>
+                    <td className="bank-cell">{item.bank}</td>
+                    <td className="amount-cell">Rp {Number(item.amount).toLocaleString("id-ID")}</td>
+                    <td className="date-cell">{item.date}</td>
+                    <td>
+                      <span className={`badge ${item.status}`}>
+                        {getBadgeLabel(item.status)}
+                      </span>
+                    </td>
+                    <td className="action-cell">
+                      <button className="action-btn" onClick={() => toggleDropdown(index)}>
+                        <MoreVertical size={16} />
+                      </button>
+
+                      {activeDropdown === index && (
+                        <div className="action-dropdown">
+
+                          <button className="dropdown-item"
+                            onClick={() => navigate(
+                              `/invoice/preview/${item.id}?type=${item.type || "normal"}&paper_size=${item.paper_size ?? "a4"}`
+                            )}>
+                            <Eye size={14} /> Lihat Detail
+                          </button>
+
+                          <button className="dropdown-item"
+                            onClick={() => navigate(`/invoice/edit/${item.id}?type=${item.type || "normal"}`)}>
+                            <Pencil size={14} /> Ubah
+                          </button>
+
+                          {/* Share sub-dropdown */}
+                          <div className="share-sub-wrap">
+                            <button
+                              className="dropdown-item"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShareDropdown(prev => prev === index ? null : index);
+                              }}
+                            >
+                              <Share2 size={14} /> Bagikan
+                              <ChevronDown
+                                size={12}
+                                style={{
+                                  marginLeft: "auto",
+                                  transform: shareDropdown === index ? "rotate(180deg)" : "none",
+                                  transition: "transform 0.2s",
+                                }}
+                              />
+                            </button>
+
+                            {shareDropdown === index && (
+                              <div className="share-sub-menu">
+                                <button
+                                  className="share-sub-item share-sub-wa"
+                                  onClick={() => {
+                                    handleShareWhatsApp(item);
+                                    setActiveDropdown(null);
+                                    setShareDropdown(null);
+                                  }}
+                                >
+                                  <FaWhatsapp size={13} /> WhatsApp
+                                </button>
+                                <button
+                                  className="share-sub-item share-sub-email"
+                                  onClick={() => {
+                                    handleShareEmail(item);
+                                    setActiveDropdown(null);
+                                    setShareDropdown(null);
+                                  }}
+                                >
+                                  <Mail size={13} /> Email
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="dropdown-divider" />
+
+                          <button className="dropdown-item delete"
+                            onClick={() => { setInvoiceToDelete(item.id); setActiveDropdown(null); }}>
+                            <Trash2 size={14} /> Hapus
+                          </button>
+
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* PAGINATION */}

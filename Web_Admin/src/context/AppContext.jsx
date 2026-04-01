@@ -51,7 +51,7 @@ export const AppProvider = ({ children }) => {
      FETCH INVOICES FROM API
   ============================ */
   const refreshInvoices = () => {
-    fetch("http://127.0.0.1:8000/api/invoices")
+    fetch("https://api.flowerplusofficial.com/api/invoices")
       .then(res => res.json())
       .then(data => {
         // Sort by updated_at descending — invoice terbaru/teredit di atas
@@ -73,7 +73,7 @@ export const AppProvider = ({ children }) => {
      FETCH ADMINS FROM API
   ============================ */
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/users")
+    fetch("https://api.flowerplusofficial.com/api/users")
       .then(res => res.json())
       .then(data => setAdmins(data))
       .catch(err => console.error("Error fetching users:", err));
@@ -85,7 +85,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     if (!user.id) return;
 
-    fetch(`http://127.0.0.1:8000/api/users/${user.id}`)
+    fetch(`https://api.flowerplusofficial.com/api/users/${user.id}`)
       .then(res => res.json())
       .then(data => {
         setUser(prev => ({

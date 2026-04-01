@@ -238,8 +238,13 @@ const CreateInvoiceForm = () => {
 
           {items.map((item, index) => (
             <div key={index} className="ci-item-row">
-              <input type="text" placeholder="Deskripsi item" className="ci-input"
-                value={item.desc} onChange={(e) => handleItemChange(index, "desc", e.target.value)} />
+              <textarea
+                placeholder={"Deskripsi item..."}
+                className="ci-input ci-desc-textarea"
+                value={item.desc}
+                onChange={(e) => handleItemChange(index, "desc", e.target.value)}
+                rows={2}
+              />
               <input type="number" placeholder="0" className="ci-input"
                 value={item.qty ?? ""}
                 onChange={(e) => handleItemChange(index, "qty", e.target.value === "" ? "" : e.target.value)} />

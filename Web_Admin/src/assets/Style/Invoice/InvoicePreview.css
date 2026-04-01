@@ -118,6 +118,11 @@
   height: 62px;
 }
 
+
+.inv-table tbody tr {
+  border-top: none !important;
+}
+
 /* ============================= */
 /* PAGE INDICATOR                */
 /* ============================= */
@@ -246,7 +251,7 @@
   background: #2f5496;
   color: white;
   padding: 10px 8px;
-  border: 1px solid #1a3357;
+  border: 1px solid #000000;
   font-size: 13px;
   font-weight: 600;
   text-align: center;
@@ -257,8 +262,8 @@
   padding: 10px 8px;
   border-top: none;
   border-bottom: none;
-  border-left: 1px solid #b0bcca;
-  border-right: 1px solid #b0bcca;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #000000;
   font-size: 15px;
   vertical-align: top;
 }
@@ -269,7 +274,7 @@
 
 /* Border bottom baris terakhir A5 tanpa gambar */
 .inv-row-last-a5 td {
-  border-bottom: 1px solid #b0bcca;
+  border-bottom: 1px solid #000000;
 }
 
 /* ============================= */
@@ -277,9 +282,9 @@
 /* ============================= */
 .inv-images-row td {
   border-top: none;
-  border-bottom: 1px solid #b0bcca;
-  border-left: 1px solid #b0bcca;
-  border-right: 1px solid #b0bcca;
+  border-bottom: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 1px solid #000000;
   padding: 10px 8px;
   vertical-align: top;
 }
@@ -349,7 +354,7 @@
   color: white !important;
   font-weight: 600;
   text-align: center;
-  border: 1px solid #1a3357 !important;
+  border: 1px solid #000000 !important;
   text-decoration: none;
 }
 
@@ -366,7 +371,7 @@
   font-weight: 700 !important;
   font-size: 14px !important;
   text-align: center;
-  border: 1px solid #b0bcca !important;
+  border: 1px solid #000000 !important;
 }
 
 .total-value {

@@ -376,7 +376,7 @@ const InvoiceDownload = () => {
 
   /* ── Fetch invoice ── */
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/invoices/${id}`)
+    fetch(`https://api.flowerplusofficial.com/api/invoices/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("not found");
         return res.json();
@@ -386,7 +386,7 @@ const InvoiceDownload = () => {
         setInvoiceData(inv);
         if (!inv.invoiceNumber) {
           const ps = inv.paper_size || "a4";
-          fetch(`http://127.0.0.1:8000/api/invoices/preview-number?paper_size=${ps}`)
+          fetch(`https://api.flowerplusofficial.com/api/invoices/preview-number?paper_size=${ps}`)
             .then((r) => r.json())
             .then((d) => setGeneratedNumber(d.invoiceNumber))
             .catch(() => {});

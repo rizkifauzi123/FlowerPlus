@@ -682,6 +682,25 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   font-size: 15px !important;
 }
 
+/* ── Deskripsi textarea ── */
+.ci-desc-textarea {
+  resize: vertical;
+  min-height: 60px;
+  max-height: 160px;
+  line-height: 1.55;
+  padding: 9px 14px;
+  font-size: 13px;
+  white-space: pre-wrap;   /* agar baris baru tampil */
+  overflow-y: auto;
+  vertical-align: top;
+  align-self: start;       /* supaya tidak stretch di grid */
+}
+
+/* ci-item-row: biarkan textarea menentukan tinggi row */
+.ci-item-row {
+  align-items: start;
+}
+
 
 /* =============================================================
    RESPONSIVE

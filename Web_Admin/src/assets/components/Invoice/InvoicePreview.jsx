@@ -33,7 +33,7 @@ const InvoicePreview = ({ data, onBack }) => {
   const [pairPage, setPairPage]           = useState(1);
 
   const openPairModal = () => {
-    fetch("http://127.0.0.1:8000/api/invoices?paper_size=a5&per_page=200")
+    fetch("https://api.flowerplusofficial.com/api/invoices?paper_size=a5&per_page=200")
       .then(res => res.json())
       .then(result => {
         const raw = result.data?.data || result.data || result || [];
@@ -53,7 +53,7 @@ const InvoicePreview = ({ data, onBack }) => {
 
   useEffect(() => {
     if (!data && id) {
-      fetch(`http://127.0.0.1:8000/api/invoices/${id}`)
+      fetch(`https://api.flowerplusofficial.com/api/invoices/${id}`)
         .then(res => res.json())
         .then(result => setInvoiceDetail(result.data || result))
         .catch(err => console.error("Fetch invoice detail error:", err));
@@ -82,7 +82,7 @@ const InvoicePreview = ({ data, onBack }) => {
   useEffect(() => {
     const invNumber = invoiceData?.invoiceNumber;
     if (!invNumber) {
-      fetch(`http://127.0.0.1:8000/api/invoices/preview-number?paper_size=${paperSize}`)
+      fetch(`https://api.flowerplusofficial.com/api/invoices/preview-number?paper_size=${paperSize}`)
         .then(res => res.json())
         .then(d => setGeneratedNumber(d.invoiceNumber))
         .catch(err => console.error("Preview number error:", err));
@@ -290,7 +290,7 @@ const InvoicePreview = ({ data, onBack }) => {
   };
 
   /* ── download PDF ── */
-  const handleDownloadPDF = async () => {
+const handleDownloadPDF = async () => {
     const pageElements = isA5
       ? [invoiceRef.current.querySelector(".paper-a5")]
       : Array.from(invoiceRef.current.querySelectorAll(".invoice-paper-scalable"));
@@ -316,14 +316,20 @@ const InvoicePreview = ({ data, onBack }) => {
       else         { pdf.addPage([pageW, pageH]); }
       pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
     }
-    const branch     = sanitizeFileName(invoiceData.branch);
-    const bank       = sanitizeFileName(invoiceData.bank || "BANK");
-    const invoiceNo  = (invoiceData.invoiceNumber || "").split("/")[0];
-    const customer   = sanitizeFileName(invoiceData.kepada).slice(0, 30);
-    const tanggal    = formatDateCompact(invoiceData.date);
-    const sizeSuffix = isA5 ? "_A5" : "_A4";
-    const ttdSuffix  = (!isA5 && isSigned) ? "_TTD" : "";
-    pdf.save(`FP_${branch}_${bank}_${invoiceNo}_${customer}_${tanggal}${ttdSuffix}${sizeSuffix}.pdf`);
+
+    // Helper: nama bulan singkatan Indonesia
+    const getBulanID = (dateStr) => {
+      const bulan = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGT","SEP","OKT","NOV","DES"];
+      const d = new Date(dateStr);
+      return bulan[d.getMonth()];
+    };
+
+    const invoiceNo = (invoiceData.invoiceNumber || "").split("/")[0];
+    const bulan     = getBulanID(invoiceData.date);
+    const customer  = sanitizeFileName(invoiceData.kepada).replace(/_/g, " ").slice(0, 30);
+    const branch    = sanitizeFileName(invoiceData.branch).replace(/_/g, " ");
+
+    pdf.save(`INV ${invoiceNo} ${bulan} ${customer} ${branch}.pdf`);
   };
 
   /* ── save ── */
@@ -332,11 +338,23 @@ const InvoicePreview = ({ data, onBack }) => {
     try {
       const isEdit = Boolean(invoiceData.id);
       const url = isEdit
-        ? `http://127.0.0.1:8000/api/invoices/${invoiceData.id}`
-        : "http://127.0.0.1:8000/api/invoices";
-      const sanitizedItems = allItems.map(item => ({
-        ...item, qty: Number(item.qty || 0), price: Number(item.price || 0),
-      }));
+        ? `https://api.flowerplusofficial.com/api/invoices/${invoiceData.id}`
+        : "https://api.flowerplusofficial.com/api/invoices";
+      const sanitizedItems = allItems.map(item => {
+      const imageValue = item.image && !item.image.startsWith("data:") 
+          ? item.image   // sudah URL server → kirim apa adanya
+          : item.preview && !item.preview.startsWith("data:")
+          ? item.preview // preview sudah URL → kirim
+          : null;        // base64 → jangan kirim ke server
+
+        return {
+          ...item,
+          qty:     Number(item.qty || 0),
+          price:   Number(item.price || 0),
+          image:   imageValue,
+          preview: undefined, // jangan kirim field preview ke API
+        };
+      });
       const response = await fetch(url, {
         method: isEdit ? "PUT" : "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -413,7 +431,11 @@ const InvoicePreview = ({ data, onBack }) => {
               {pItems.map((item, i) => (
                 <tr key={i} className={!pHasImg ? "inv-row-last-a5" : ""}>
                   <td className="inv-td-center">{i + 1}</td>
-                  <td>{item.desc}</td>
+                  <td>
+                    <span style={{ whiteSpace: "pre-wrap", color: "#1f2937", fontSize: "inherit", fontWeight: "inherit" }}>
+                      {item.desc}
+                    </span>
+                  </td>
                   <td className="inv-td-center">{item.qty}</td>
                   <td className="inv-td-center">{Number(item.price).toLocaleString("id-ID")}</td>
                   <td className="inv-td-center">{(Number(item.qty)*Number(item.price)).toLocaleString("id-ID")}</td>
@@ -518,7 +540,11 @@ const InvoicePreview = ({ data, onBack }) => {
               return (
                 <tr key={i} className={showBottomBorder ? "inv-row-last-a5" : ""}>
                   <td className="inv-td-center">{startIndex + i + 1}</td>
-                  <td>{item.desc}</td>
+                  <td>
+                    <span style={{ whiteSpace: "pre-wrap", color: "#1f2937", fontSize: "inherit", fontWeight: "inherit" }}>
+                      {item.desc}
+                    </span>
+                  </td>
                   <td className="inv-td-center">{item.qty}</td>
                   <td className="inv-td-center">{Number(item.price).toLocaleString("id-ID")}</td>
                   <td className="inv-td-center">{(Number(item.qty)*Number(item.price)).toLocaleString("id-ID")}</td>

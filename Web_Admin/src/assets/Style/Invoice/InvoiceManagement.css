@@ -11,6 +11,7 @@
   margin: 0 auto;
   padding: 28px 32px;
   font-family: 'Plus Jakarta Sans', sans-serif;
+  box-sizing: border-box;
 }
 
 /* ========================
@@ -21,6 +22,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 22px;
+  gap: 12px;
 }
 
 .header-text h1 {
@@ -58,6 +60,7 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   white-space: nowrap;
   letter-spacing: -0.1px;
+  flex-shrink: 0;
 }
 
 .create-btn-invoice:hover {
@@ -120,6 +123,7 @@
   border: 1px solid #edf1f7;
   box-shadow: 0 1px 6px rgba(15, 43, 70, 0.05);
   flex-wrap: wrap;
+  box-sizing: border-box;
 }
 
 .filter-left {
@@ -148,6 +152,7 @@
   flex-wrap: wrap;
   flex: 1;
   align-items: center;
+  min-width: 0;
 }
 
 /* ========================
@@ -237,6 +242,7 @@
   color: #334155;
   transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
   outline: none;
+  box-sizing: border-box;
 }
 
 .search-input::placeholder {
@@ -542,7 +548,7 @@
 }
 
 /* ========================
-   TABLE CARD — overflow visible agar dropdown tidak terpotong
+   TABLE CARD
 ======================== */
 .invoice-table-card {
   width: 100%;
@@ -553,11 +559,33 @@
   border: 1px solid #edf1f7;
 }
 
+/* Wrapper for horizontal scroll on small screens */
+.invoice-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 16px;
+  /* Smooth scrollbar on webkit */
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}
+
+.invoice-table-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.invoice-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.invoice-table-scroll::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  /* auto layout — kolom menyesuaikan konten secara alami */
-  table-layout: auto;
+  /* Removed table-layout: auto so columns shrink naturally */
+  min-width: 600px;
 }
 
 thead {
@@ -566,12 +594,12 @@ thead {
 
 th {
   text-align: left;
-  padding: 13px 14px;
-  font-size: 10.5px;
+  padding: 12px 12px;
+  font-size: 10px;
   font-weight: 700;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: #b0bec8;
-  letter-spacing: 0.7px;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   background: #fafbfc;
   white-space: nowrap;
@@ -587,8 +615,8 @@ tbody tr:hover {
 }
 
 td {
-  padding: 14px 14px;
-  font-size: 13px;
+  padding: 12px 12px;
+  font-size: 12.5px;
   font-weight: 500;
   color: #334155;
   vertical-align: middle;
@@ -597,7 +625,7 @@ td {
 
 /* Invoice ID */
 .invoice-id {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 700;
   color: #1e293b;
   letter-spacing: 0.1px;
@@ -606,7 +634,7 @@ td {
 /* Customer */
 td strong {
   display: block;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #1e293b;
   margin-bottom: 2px;
@@ -615,7 +643,7 @@ td strong {
 
 td > span {
   display: block;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 400;
   color: #94a3b8;
 }
@@ -623,18 +651,19 @@ td > span {
 .bank-cell {
   color: #5a7a8a;
   font-weight: 500;
+  font-size: 12px;
 }
 
 .amount-cell {
   font-weight: 700;
   color: #1e293b;
-  font-size: 13.5px;
+  font-size: 13px;
   letter-spacing: -0.2px;
 }
 
 .date-cell {
   color: #64748b;
-  font-size: 12.5px;
+  font-size: 12px;
 }
 
 /* ========================
@@ -643,9 +672,9 @@ td > span {
 .badge {
   display: inline-flex;
   align-items: center;
-  padding: 3px 9px;
+  padding: 3px 8px;
   border-radius: 7px;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   font-family: 'Plus Jakarta Sans', sans-serif;
   letter-spacing: 0.1px;
@@ -671,13 +700,13 @@ td > span {
 }
 
 /* ========================
-   ACTION COLUMN — dropdown overlay tumpang tindih
+   ACTION COLUMN
 ======================== */
 td.action-cell {
   text-align: right;
   position: relative;
   overflow: visible !important;
-  padding: 14px 14px;
+  padding: 12px 12px;
 }
 
 .action-btn {
@@ -699,7 +728,7 @@ td.action-cell {
   color: #475569;
 }
 
-/* Dropdown overlay — tumpang tindih di atas baris tabel */
+/* Dropdown overlay */
 .action-dropdown {
   position: absolute;
   right: 10px;
@@ -717,7 +746,6 @@ td.action-cell {
   animation: dropdownFadeIn 0.13s ease;
 }
 
-/* Baris terakhir: dropdown muncul ke atas */
 tr:last-child .action-dropdown,
 tr:nth-last-child(2) .action-dropdown {
   top: auto;
@@ -914,7 +942,7 @@ tr:nth-last-child(2) .action-dropdown {
 }
 
 /* ========================
-   SUMMARY BAR (paper size)
+   SUMMARY BAR
 ======================== */
 .inv-summary-bar {
   display: flex;
@@ -927,6 +955,8 @@ tr:nth-last-child(2) .action-dropdown {
   gap: 0;
   box-shadow: 0 1px 6px rgba(15, 43, 70, 0.04);
   width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .inv-summary-item {
@@ -1062,9 +1092,9 @@ tr:nth-last-child(2) .action-dropdown {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 8px;
+  padding: 3px 7px;
   border-radius: 6px;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
   font-family: 'Plus Jakarta Sans', sans-serif;
   white-space: nowrap;
@@ -1261,110 +1291,8 @@ tr:nth-last-child(2) .action-dropdown {
 }
 
 /* ========================
-   RESPONSIVE — TABLET
+   HEADER RIGHT LAYOUT
 ======================== */
-@media (max-width: 1023px) {
-  .invoice-page { padding: 20px 20px; }
-  .header-text h1 { font-size: 20px; }
-  .search-wrap { min-width: 120px; }
-  th { padding: 12px 14px; }
-  td { padding: 14px 14px; font-size: 12.5px; }
-
-  .invoice-table-card {
-    overflow-x: auto;
-  }
-  table {
-    min-width: 680px;
-  }
-}
-
-/* ========================
-   RESPONSIVE — MOBILE
-======================== */
-@media (max-width: 767px) {
-  .invoice-page { padding: 16px 14px; }
-
-  .invoice-header {
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .header-text h1 { font-size: 19px; }
-
-  .create-btn-invoice {
-    width: 100%;
-    justify-content: center;
-    padding: 11px;
-    border-radius: 11px;
-  }
-
-  .filter-card {
-    padding: 12px 13px;
-    gap: 8px;
-    border-radius: 13px;
-    margin-bottom: 14px;
-  }
-
-  .filter-left { display: none; }
-  .filter-divider-v { display: none; }
-
-  .filter-controls { gap: 7px; width: 100%; }
-
-  .filter-date-btn { height: 35px; font-size: 12.5px; border-radius: 9px; }
-
-  .search-wrap { flex: 1; min-width: 0; }
-  .search-input { height: 35px; font-size: 12.5px; border-radius: 9px; }
-
-  .custom-dropdown { flex: 1; min-width: 95px; }
-  .custom-dropdown-trigger { height: 35px; font-size: 12.5px; border-radius: 9px; padding: 0 9px 0 11px; }
-
-  .invoice-table-card {
-    border-radius: 13px;
-    overflow-x: auto;
-  }
-
-  table {
-    min-width: 680px;
-  }
-
-  th { padding: 11px 11px; font-size: 10px; }
-  td { padding: 12px 11px; font-size: 12px; }
-  td strong { font-size: 12.5px; }
-  td > span { font-size: 11px; }
-
-  .action-dropdown { right: 4px; width: 148px; }
-  .badge { font-size: 11px; padding: 3px 9px; }
-
-  .del-modal { padding: 24px 18px 20px; border-radius: 16px; }
-  .del-actions { flex-direction: column-reverse; }
-  .del-btn-cancel, .del-btn-confirm { flex: none; width: 100%; }
-
-  .inv-summary-bar {
-    width: 100%;
-    justify-content: space-between;
-    padding: 10px 14px;
-  }
-  .inv-summary-item { padding: 4px 8px; gap: 5px; }
-  .isb-label { font-size: 11.5px; }
-
-  .paper-size-toggle { width: 100%; justify-content: stretch; }
-  .pst-btn { flex: 1; justify-content: center; font-size: 12px; padding: 5px 6px; }
-}
-
-/* ========================
-   KEYBOARD NAVIGATION
-======================== */
-tbody tr.kb-active {
-  background: #f0f7ff !important;
-  box-shadow: inset 3px 0 0 #3b9eda;
-}
-
-tbody tr.kb-active td {
-  color: #0b2239;
-}
-
-/* Header right layout */
 .header-right {
   display: flex;
   align-items: center;
@@ -1399,7 +1327,261 @@ tbody tr.kb-active td {
   margin: 0 1px;
 }
 
-@media (max-width: 767px) {
+/* ========================
+   KEYBOARD NAVIGATION
+======================== */
+tbody tr.kb-active {
+  background: #f0f7ff !important;
+  box-shadow: inset 3px 0 0 #3b9eda;
+}
+
+tbody tr.kb-active td {
+  color: #0b2239;
+}
+
+/* ========================
+   RESPONSIVE — LARGE LAPTOP (1024–1280px)
+======================== */
+@media (max-width: 1280px) {
+  .invoice-page {
+    padding: 24px 24px;
+  }
+
+  .pst-sub {
+    display: none;
+  }
+
+  .pst-btn {
+    padding: 5px 9px;
+  }
+}
+
+/* ========================
+   RESPONSIVE — LAPTOP (900–1023px)
+   Semua kolom tetap terlihat, diperkecil
+======================== */
+@media (max-width: 1023px) {
+  .invoice-page {
+    padding: 20px 18px;
+  }
+
+  .header-text h1 { font-size: 19px; }
+
+  .search-wrap { min-width: 110px; }
+
+  /* Header & filter */
+  .filter-card {
+    gap: 8px;
+    padding: 10px 13px;
+  }
+
+  .filter-controls {
+    gap: 6px;
+  }
+
+  /* Summary bar */
+  .inv-summary-bar {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 9px 14px;
+  }
+
+  .inv-summary-item {
+    padding: 4px 10px;
+  }
+
+  /* Table: compact padding, smaller font, all columns visible */
+  th {
+    padding: 10px 9px;
+    font-size: 9.5px;
+    letter-spacing: 0.4px;
+  }
+
+  td {
+    padding: 11px 9px;
+    font-size: 12px;
+  }
+
+  td strong { font-size: 12px; }
+  td > span { font-size: 10.5px; }
+
+  .invoice-id { font-size: 12px; }
+  .amount-cell { font-size: 12px; }
+  .date-cell { font-size: 11.5px; }
+  .bank-cell { font-size: 11.5px; }
+
+  .badge { font-size: 10.5px; padding: 2px 7px; }
+  .paper-badge { font-size: 9.5px; padding: 2px 6px; }
+
+  table {
+    min-width: 0;  /* let table shrink to fit, scroll only if truly needed */
+    width: 100%;
+  }
+
   .inv-kb-hint { display: none; }
   .header-right { gap: 0; }
+}
+
+/* ========================
+   RESPONSIVE — TABLET (768–899px)
+======================== */
+@media (max-width: 899px) {
+  .invoice-page {
+    padding: 16px 14px;
+  }
+
+  .header-text h1 { font-size: 18px; }
+  .header-text p { font-size: 12px; }
+
+  /* Filter card: 2 rows */
+  .filter-card {
+    padding: 10px 12px;
+    gap: 7px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  .filter-left { display: none; }
+  .filter-divider-v { display: none; }
+  .filter-controls {
+    gap: 6px;
+    width: 100%;
+  }
+
+  /* Paper size toggle full width */
+  .paper-size-toggle { width: 100%; }
+  .pst-btn { flex: 1; justify-content: center; font-size: 12px; padding: 5px 6px; }
+  .pst-sub { display: none; }
+
+  /* Date + Search same row */
+  .filter-date-btn {
+    height: 33px;
+    font-size: 12px;
+    padding: 0 10px;
+    gap: 5px;
+  }
+
+  .search-wrap { flex: 1; min-width: 0; }
+  .search-input { height: 33px; font-size: 12px; }
+
+  /* Dropdowns */
+  .custom-dropdown { flex: 1; min-width: 85px; }
+  .custom-dropdown-trigger {
+    height: 33px;
+    font-size: 12px;
+    padding: 0 8px 0 10px;
+  }
+
+  /* Summary bar */
+  .inv-summary-bar {
+    width: 100%;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: 12px;
+  }
+
+  .inv-summary-item { padding: 4px 8px; gap: 5px; }
+  .isb-label { font-size: 11px; }
+  .isb-count { font-size: 11.5px; padding: 1px 6px; min-width: 22px; }
+
+  /* Table: all columns visible, compact */
+  table { min-width: 0; width: 100%; }
+
+  th { padding: 9px 8px; font-size: 9px; letter-spacing: 0.3px; }
+  td { padding: 10px 8px; font-size: 11.5px; }
+  td strong { font-size: 11.5px; }
+  td > span { font-size: 10px; }
+
+  .invoice-id { font-size: 11.5px; }
+  .amount-cell { font-size: 11.5px; }
+  .date-cell { font-size: 11px; }
+  .bank-cell { font-size: 11px; }
+
+  .badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; }
+  .paper-badge { font-size: 9.5px; padding: 2px 5px; gap: 3px; }
+
+  .action-dropdown { right: 4px; width: 148px; }
+
+  /* Delete modal */
+  .del-modal { padding: 24px 18px 20px; border-radius: 16px; }
+}
+
+/* ========================
+   RESPONSIVE — MOBILE (481–767px)
+======================== */
+@media (max-width: 767px) {
+  .invoice-page { padding: 14px 12px; }
+
+  .invoice-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .create-btn-invoice {
+    width: 100%;
+    justify-content: center;
+    padding: 11px;
+    border-radius: 11px;
+  }
+
+  /* Table: scroll horizontally on smallest screens */
+  .invoice-table-scroll { border-radius: 12px; }
+  table { min-width: 560px; }
+
+  th { padding: 9px 8px; font-size: 9px; }
+  td { padding: 10px 8px; font-size: 11px; }
+  td strong { font-size: 11.5px; }
+  td > span { font-size: 10px; }
+
+  .invoice-id { font-size: 11px; }
+  .amount-cell { font-size: 11px; }
+  .date-cell { font-size: 10.5px; }
+
+  .del-actions { flex-direction: column-reverse; }
+  .del-btn-cancel, .del-btn-confirm { flex: none; width: 100%; }
+}
+
+/* ========================
+   RESPONSIVE — MOBILE (< 480px)
+======================== */
+@media (max-width: 479px) {
+  .invoice-page { padding: 12px 10px; }
+
+  .header-text h1 { font-size: 17px; }
+
+  .inv-summary-bar { gap: 0; padding: 8px 10px; }
+  .inv-summary-item { padding: 4px 6px; gap: 4px; }
+  .isb-label { font-size: 10.5px; }
+
+  .filter-card { padding: 8px 10px; gap: 6px; }
+  .filter-controls { gap: 5px; }
+
+  .filter-date-btn { height: 31px; font-size: 11.5px; padding: 0 8px; }
+  .search-input { height: 31px; font-size: 11.5px; }
+  .custom-dropdown-trigger { height: 31px; font-size: 11.5px; padding: 0 7px 0 9px; }
+
+  table { min-width: 520px; }
+
+  th { padding: 8px 7px; font-size: 8.5px; }
+  td { padding: 9px 7px; font-size: 10.5px; }
+  td strong { font-size: 11px; }
+  td > span { font-size: 9.5px; }
+
+  .paper-badge { font-size: 9px; padding: 2px 5px; }
+  .badge { font-size: 9.5px; padding: 2px 6px; }
+
+  .action-dropdown { right: 0; width: 140px; }
+  .dropdown-item { font-size: 12px; padding: 7px 9px; gap: 7px; }
+
+  .pagination-management button { min-width: 30px; height: 30px; font-size: 12px; }
+
+  .calendar-dropdown { width: 240px; padding: 12px; }
+  .calendar-day { height: 26px; font-size: 11.5px; }
+  .calendar-day-label { font-size: 10px; }
+
+  .del-modal { padding: 20px 16px 18px; border-radius: 14px; }
+  .del-icon-wrap { width: 56px; height: 56px; }
+  .del-title { font-size: 16px; }
+  .del-subtitle { font-size: 12.5px; }
 }

@@ -208,7 +208,7 @@
 }
 .nb-notif-item:hover { background: #fafcfe; }
 
-.nb-notif-dot { width: 7px; height: 7px; border-radius: 50%; background: #ef4444; flex-shrink: 0; }
+.nb-notif-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
 .nb-notif-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
 
@@ -286,6 +286,27 @@
 .nb-chevron { color: #b0bec8; flex-shrink: 0; transition: transform .2s ease, color .2s ease; }
 .nb-chevron.rotated { transform: rotate(180deg); }
 .nb-user-trigger:hover .nb-chevron { color: #64748b; }
+
+
+/* Overdue dot — merah */
+.nb-notif-dot--overdue {
+  background: #ef4444;
+}
+
+/* Unpaid dot — amber */
+.nb-notif-dot--unpaid {
+  background: #f59e0b;
+}
+
+/* Label terlambat — merah */
+.nb-notif-late--overdue {
+  color: #dc2626;
+}
+
+/* Label belum dibayar — amber */
+.nb-notif-late--unpaid {
+  color: #f59e0b;
+}
 
 /* ========================
    USER ONLINE

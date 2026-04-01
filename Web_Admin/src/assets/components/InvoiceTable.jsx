@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 
 const InvoiceTable = () => {
- const { invoices } = useApp(); // 🔥 ambil dari context
+  const { invoices } = useApp();
 
   if (!Array.isArray(invoices)) return null;
   const navigate = useNavigate();
@@ -13,15 +13,15 @@ const InvoiceTable = () => {
 
       <div className="recent-header">
         <div>
-          <h3>Recent Invoices</h3>
-          <p>Latest invoice activities</p>
+          <h3>Invoice Terbaru</h3>
+          <p>Aktivitas invoice terkini</p>
         </div>
 
         <button
           className="view-all"
           onClick={() => navigate("/invoice")}
         >
-          View All →
+          Lihat Semua →
         </button>
       </div>
 
