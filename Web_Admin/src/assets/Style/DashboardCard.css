@@ -158,6 +158,186 @@
 }
 
 /* ========================
+   FILTER PERIODE (TAMBAHAN)
+======================== */
+ 
+.dash-period-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15,43,70,0.07);
+  border-radius: 14px;
+  padding: 10px 16px;
+  box-shadow: 0 1px 4px rgba(15,43,70,0.04);
+}
+ 
+.dash-period-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+ 
+.dash-period-icon {
+  color: #7a94ab;
+}
+ 
+.dash-period-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0b2239;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+ 
+.dash-period-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0b2239;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+ 
+.dash-period-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+ 
+/* Dropdown trigger */
+.dash-filter-dropdown {
+  position: relative;
+}
+ 
+.dash-filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid rgba(15,43,70,0.10);
+  border-radius: 10px;
+  background: #f4f7fb;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  color: #0b2239;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+ 
+.dash-filter-trigger:hover {
+  border-color: rgba(59,130,246,0.3);
+  background: #eef4f9;
+}
+ 
+.dash-filter-trigger.open {
+  border-color: rgba(59,130,246,0.4);
+  background: #eef4f9;
+}
+ 
+.dash-filter-trigger.active {
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+ 
+.dash-filter-icon {
+  color: #7a94ab;
+  flex-shrink: 0;
+}
+ 
+.dash-filter-trigger.active .dash-filter-icon {
+  color: #1e40af;
+}
+ 
+.dash-filter-chevron {
+  color: #7a94ab;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+ 
+.dash-filter-chevron.rotated {
+  transform: rotate(180deg);
+}
+ 
+/* Dropdown menu */
+.dash-filter-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid rgba(15,43,70,0.10);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(15,43,70,0.12);
+  z-index: 100;
+  padding: 4px;
+}
+ 
+.dash-filter-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500;
+  color: #0b2239;
+  cursor: pointer;
+  border-radius: 8px;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+ 
+.dash-filter-option:hover {
+  background: #f1f5f9;
+}
+ 
+.dash-filter-option.selected {
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 700;
+}
+ 
+.dash-filter-check {
+  color: #1e40af;
+  flex-shrink: 0;
+}
+ 
+/* Tombol reset */
+.dash-period-reset {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(220,38,38,0.2);
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+ 
+.dash-period-reset:hover {
+  background: #fee2e2;
+  border-color: rgba(220,38,38,0.35);
+}
+
+/* ========================
    STAT CARDS
    Baris 1: card-full (Total Keseluruhan, full width)
    Baris 2: 4 kartu sejajar
@@ -643,6 +823,52 @@
   .donut-wrapper { width: 100%; height: 240px; }
   .legend        { margin-top: 16px; }
   .legend-item   { padding: 9px 12px; font-size: 13px; }
+
+  .dash-period-filter {
+    flex-direction: row;           /* ← ubah dari column ke row */
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .dash-period-left {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .dash-period-label {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+
+  .dash-period-controls {
+    display: flex;
+    flex-direction: row;           /* ← dropdown sejajar horizontal */
+    flex-wrap: nowrap;
+    gap: 6px;
+    width: auto;                   /* ← bukan 100% */
+  }
+
+  /* Dropdown tidak stretch full width lagi */
+  .dash-filter-dropdown {
+    flex: 0 1 auto;               /* ← ubah dari flex: 1 */
+  }
+
+  .dash-filter-trigger {
+    width: auto;                   /* ← bukan 100% */
+    justify-content: flex-start;
+    padding: 0 10px;
+    font-size: 12px;
+    height: 32px;
+  }
+
+  .dash-filter-menu {
+    right: auto;
+    left: 0;
+    width: 160px;                  /* fixed width agar tidak overflow */
+  }
+
 }
 
 /* ========================
@@ -650,7 +876,7 @@
 ======================== */
 
 @media (max-width: 420px) {
-  .dashboard-cards {
+ .dashboard-cards {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
@@ -660,6 +886,66 @@
   .card h2 { font-size: 16px; }
   .chart-card { padding: 18px 12px; }
   .donut-wrapper { height: 210px; }
-  .dash-paper-btn { font-size: 11px; padding: 0 8px; gap: 4px; }
+
+  /* ── Paper toggle: 3 tombol sejajar penuh ── */
+  .dash-paper-toggle {
+    width: 100%;
+    gap: 4px;
+    padding: 5px;
+  }
+  .dash-paper-btn {
+    flex: 1;
+    font-size: 11px;
+    padding: 0 6px;
+    gap: 3px;
+    height: 32px;
+    justify-content: center;
+  }
   .dash-paper-count { display: none; }
+
+  /* ── Period filter: label atas, dropdown + reset bawah sejajar ── */
+  .dash-period-filter {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+  .dash-period-left {
+    flex: 1 1 100%;   /* label periode full width di baris atas */
+    gap: 6px;
+  }
+  .dash-period-label {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  .dash-period-controls {
+    display: flex;
+    flex-direction: row;     /* dropdown & reset sejajar horizontal */
+    flex-wrap: nowrap;
+    gap: 5px;
+    width: 100%;
+  }
+  .dash-filter-dropdown {
+    flex: 1;                 /* bulan & tahun bagi rata */
+  }
+  .dash-filter-trigger {
+    width: 100%;
+    justify-content: space-between;
+    font-size: 11px;
+    height: 30px;
+    padding: 0 8px;
+  }
+  .dash-filter-menu {
+    width: 150px;
+    left: 0;
+    right: auto;
+  }
+  .dash-period-reset {
+    flex-shrink: 0;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
 }

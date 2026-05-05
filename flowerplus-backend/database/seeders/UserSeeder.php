@@ -29,8 +29,17 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name'       => 'Rizki Ahmad Fauzi',
+                'email'      => 'rizkiahmadfauzi1215@gmail.com',
+                'password'   => Hash::make('uji123'),
+                'role'       => 'Develop',
+                'avatar'     => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
-        $this->command->info('✅ 2 user berhasil dibuat!');
+        $this->command->info('✅ 3 user berhasil dibuat!');
     }
 }

@@ -17,6 +17,8 @@ import ProtectedRoute from "./assets/routes/ProtectedRoute";
 
 import { AppProvider } from "./context/AppContext";
 
+import ResetPassword from "./assets/components/Autentikasi/ResetPassword";
+
 import "./App.css";
 
 function App() {
@@ -37,6 +39,7 @@ function App() {
 
           {/* LOGIN */}
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} /> {/* ← tambahkan ini */}
           <Route path="/invoice/download/:id" element={<InvoiceDownload />} />
 
           {/* PROTECTED ROUTE */}

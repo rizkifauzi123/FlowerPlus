@@ -6,17 +6,11 @@ import { useApp } from "../../../context/AppContext";
 import { BANK_INFO } from "../constants/bankInfo";
 import "../../Style/Invoice/CreateInvoice.css";
 
-// Urutan tampil di dropdown
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 const bankOptions = [
-  "Mandiri",
-  "BRI",
-  "BCA",
-  "BNI",
-  "BSI",
-  "BTN",
-  "Bank Maluku Malut",
-  "Tunai",
-  "Other",
+  "Mandiri", "BRI", "BCA", "BNI", "BSI", "BTN",
+  "Bank Maluku Malut","DJPB", "Tunai",
 ];
 
 const BankDropdown = ({ value, onChange }) => {
@@ -75,12 +69,14 @@ const CreateInvoiceForm = () => {
   const existingInvoice = invoices.find((inv) => String(inv.id) === String(id));
   const [searchParams]  = useSearchParams();
 
-  const [form, setForm] = useState({ date: "", kepada: "", branch: "", bank: "" });
-  const [customBank, setCustomBank]     = useState("");
-  const [items, setItems]               = useState([{ desc: "", qty: "", price: "", preview: null }]);
+  const [form, setForm]             = useState({ date: "", kepada: "", branch: "", bank: "" });
+  const [customBank, setCustomBank] = useState("");
+  const [items, setItems]           = useState([{ desc: "", qty: "", price: "", preview: null }]);
   const [shippingCost, setShippingCost] = useState("");
   const [previewData, setPreviewData]   = useState(null);
+  const [fetchedKey, setFetchedKey] = useState(null);
 
+  const [previewNumber,    setPreviewNumber]     = useState("");
   useEffect(() => {
     if (isEditMode && existingInvoice) {
       setForm({
@@ -91,26 +87,69 @@ const CreateInvoiceForm = () => {
       });
       setItems(existingInvoice.items.map(item => ({
         ...item,
-        desc:    item.desc    ?? "",
-        qty:     item.qty     ?? "",
-        price:   item.price   ?? "",
-        preview: item.image   ?? null,
+        desc:    item.desc  ?? "",
+        qty:     String(Number(item.qty)   || ""),
+        price:   String(Math.round(Number(item.price)) || ""),
+        preview: item.image ?? null,
+        image:   item.image ?? null,
       })));
-      setShippingCost(existingInvoice.shippingCost ? String(existingInvoice.shippingCost) : "");
+
+      const rawShipping = existingInvoice.shippingCost;
+      const shippingNum = rawShipping ? Math.round(Number(rawShipping)) : 0;
+      setShippingCost(shippingNum > 0 ? String(shippingNum) : "");
     }
   }, [id]);
 
-  const handleImageUpload = (index, file) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const updated = [...items];
-      updated[index].preview = reader.result;
-      setItems(updated);
-    };
-    if (file) reader.readAsDataURL(file);
+  const handleImageUpload = async (index, file) => {
+    if (!file) return;
+
+    const base64Preview = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+
+    setItems(prev => {
+      const updated = [...prev];
+      updated[index].preview   = base64Preview;
+      updated[index].uploading = true;
+      return updated;
+    });
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res  = await fetch(`${API_URL}/api/upload-image`, { method: "POST", body: formData });
+      const text = await res.text();
+      if (!res.ok) throw new Error(`Upload gagal: ${res.status}`);
+      const data = JSON.parse(text);
+
+      setItems(prev => {
+        const updated = [...prev];
+        updated[index].preview   = base64Preview;
+        updated[index].image     = data.url;
+        updated[index].uploading = false;
+        return updated;
+      });
+      // Reset fetchedPaperSize agar preview number dihitung ulang (a5→a4 karena ada gambar baru)
+      setFetchedKey(null);
+
+    } catch (err) {
+      console.error("Upload error:", err);
+      setItems(prev => {
+        const updated = [...prev];
+        updated[index].uploading = false;
+        return updated;
+      });
+      alert(`Upload gagal: ${err.message}`);
+    }
   };
 
-  const handleChange     = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+  // Di handleChange, tambah reset saat date berubah
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
   const handleItemChange = (index, field, value) => {
     const updated = [...items];
     updated[index][field] = value;
@@ -123,13 +162,39 @@ const CreateInvoiceForm = () => {
   const shippingNum    = Number(parseRupiah(shippingCost || "0")) || 0;
   const totalAmount    = subtotalAmount + shippingNum;
 
-  // ── Tentukan paper_size ──
-  // A5 hanya jika: 1 item DAN tidak ada gambar sama sekali
-  // Jika ada gambar (1 atau lebih) → selalu A4 (format SC)
-  const hasAnyImage = items.some(item => item.preview || item.image);
-  const derivedPaperSize = isEditMode && existingInvoice?.paper_size
-    ? existingInvoice.paper_size
-    : (items.length <= 1 && !hasAnyImage) ? "a5" : "a4";
+  // ─── Derived paper size & SC flag ─────────────────────────────────────────
+  // hasAnyImage: item punya URL gambar valid (bukan base64) → ini yang dipakai backend
+  // SESUDAH — lebih eksplisit, harus URL http
+const hasAnyImage = items.some(
+  item => item.image && 
+          !item.image.startsWith("data:") && 
+          item.image.startsWith("http")
+);
+  const derivedPaperSize = (items.length <= 1 && !hasAnyImage) ? "a5" : "a4";
+
+  // Deteksi apakah format SC berubah dibanding invoice asli
+  const originalHasSC   = isEditMode ? str_contains_sc(existingInvoice?.invoiceNumber ?? "") : false;
+  const newHasSC        = derivedPaperSize === "a4" && hasAnyImage;
+  const scChanged       = isEditMode && (originalHasSC !== newHasSC);
+  const paperSizeChanged = isEditMode && existingInvoice?.paper_size !== derivedPaperSize;
+
+  // Tampilkan warning jika nomor inv akan berubah
+  const invoiceWillChange = paperSizeChanged || scChanged;
+
+// GANTI useEffect preview number
+useEffect(() => {
+  if (!form.date) return;
+  const key = `${derivedPaperSize}_${form.date}`;
+  if (fetchedKey === key) return; // sudah fetch kombinasi ini
+
+  fetch(`${API_URL}/api/invoices/preview-number?paper_size=${derivedPaperSize}&date=${form.date}`)
+    .then((res) => res.json())
+    .then((d) => {
+      setPreviewNumber(d.invoiceNumber || "");
+      setFetchedKey(key);
+    })
+    .catch(() => {});
+}, [derivedPaperSize, form.date]);
 
   const handleSubmit = () => {
     if (!form.bank)   { alert("Silakan pilih bank"); return; }
@@ -138,11 +203,30 @@ const CreateInvoiceForm = () => {
 
     const bankValue = form.bank === "Other" ? customBank : form.bank;
 
+    // Hitung preview number: hapus /SC/ dari nomor asli jika sekarang tidak ada gambar
+    const previewInvoiceNumber = (() => {
+      if (!isEditMode || !existingInvoice) return previewNumber;
+
+      const originalNumber = existingInvoice.invoiceNumber; // e.g. "112/04/SC/FP/2026"
+      const parts = originalNumber.split('/');
+      const seq   = parts[0]; // "112"
+      const month = parts[1]; // "04"
+      const year  = parts[parts.length - 1]; // "2026"
+
+      if (hasAnyImage) {
+        // Tambah SC
+        return `${seq}/${month}/SC/FP/${year}`;
+      } else {
+        // Hapus SC
+        return `${seq}/${month}/FP/${year}`;
+      }
+    })();
+
     const invoiceData = {
-      ...(isEditMode && existingInvoice ? { id: existingInvoice.id } : {}),
-      ...(isEditMode && existingInvoice
-        ? { invoiceNumber: existingInvoice.invoiceNumber, invoiceCode: existingInvoice.invoiceCode }
-        : {}),
+      ...(isEditMode && existingInvoice ? { 
+        id: existingInvoice.id,
+        invoiceNumber: previewInvoiceNumber, // ← nomor yang ditampilkan di preview
+      } : {}),
       customer:     form.kepada,
       kepada:       form.kepada,
       branch:       form.branch,
@@ -191,6 +275,24 @@ const CreateInvoiceForm = () => {
           </span>
         </div>
 
+        {/* WARNING: nomor invoice akan berubah */}
+        {isEditMode && invoiceWillChange && (
+          <div style={{
+            margin: "0 24px",
+            padding: "10px 14px",
+            background: "#fff7ed",
+            border: "1px solid #fed7aa",
+            borderRadius: "8px",
+            fontSize: "12px",
+            color: "#9a3412",
+            lineHeight: "1.5",
+          }}>
+            ⚠️ Nomor invoice akan diperbarui karena format berubah
+            {paperSizeChanged && ` (${existingInvoice?.paper_size?.toUpperCase()} → ${derivedPaperSize.toUpperCase()})`}
+            {scChanged && !paperSizeChanged && ` (${originalHasSC ? "dengan SC → tanpa SC" : "tanpa SC → dengan SC"})`}
+          </div>
+        )}
+
         {/* BODY */}
         <div className="ci-body">
           <p className="ci-section-label">Invoice Details</p>
@@ -212,16 +314,16 @@ const CreateInvoiceForm = () => {
                 onChange={(e) => handleChange("branch", e.target.value)} />
             </div>
             <div className="ci-field">
-              <label>Bank Customer</label>
+              <label>Bank Transfer</label>
               <BankDropdown value={form.bank} onChange={(val) => {
                 handleChange("bank", val);
                 if (val !== "Other") setCustomBank("");
               }} />
-              {form.bank === "Other" && (
+              {/* {form.bank === "Other" && (
                 <input type="text" placeholder="Masukkan nama bank / norek" className="ci-input"
                   style={{ marginTop: "8px" }}
                   value={customBank} onChange={(e) => setCustomBank(e.target.value)} />
-              )}
+              )} */}
             </div>
           </div>
 
@@ -239,16 +341,16 @@ const CreateInvoiceForm = () => {
           {items.map((item, index) => (
             <div key={index} className="ci-item-row">
               <textarea
-                placeholder={"Deskripsi item..."}
+                placeholder="Deskripsi item..."
                 className="ci-input ci-desc-textarea"
                 value={item.desc}
                 onChange={(e) => handleItemChange(index, "desc", e.target.value)}
                 rows={2}
               />
-              <input type="number" placeholder="0" className="ci-input"
+              <input type="number" placeholder="Qty" className="ci-input ci-qty-input"
                 value={item.qty ?? ""}
                 onChange={(e) => handleItemChange(index, "qty", e.target.value === "" ? "" : e.target.value)} />
-              <input type="text" placeholder="0" className="ci-input"
+              <input type="text" placeholder="Harga (Rp)" className="ci-input ci-price-input"
                 value={item.price ? formatRupiah(String(item.price)) : ""}
                 onChange={(e) => handleItemChange(index, "price", parseRupiah(e.target.value))} />
               <div className="ci-upload-wrapper">
@@ -258,8 +360,34 @@ const CreateInvoiceForm = () => {
                     onChange={(e) => handleImageUpload(index, e.target.files[0])} />
                 </label>
                 {item.preview && (
-                  <div className="ci-image-preview">
-                    <img src={item.preview} alt="preview" />
+                  <div className="ci-image-preview" style={{ position: "relative" }}>
+                    <img src={item.preview} alt="preview"
+                      style={{ opacity: item.uploading ? 0.4 : 1, transition: "opacity 0.2s" }} />
+                    {item.uploading && (
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: "10px", fontWeight: "600", color: "#2c4775",
+                      }}>
+                        Uploading...
+                      </div>
+                    )}
+                    {!item.uploading && (
+                      <button
+                        type="button"
+                        className="ci-image-delete"
+                        onClick={() => {
+                          const updated = [...items];
+                          updated[index].preview = null;
+                          updated[index].image   = null;
+                          setItems(updated);
+                          setFetchedKey(null); // reset agar preview number dihitung ulang
+                        }}
+                        title="Hapus gambar"
+                      >
+                        <X size={10} />
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -324,5 +452,10 @@ const CreateInvoiceForm = () => {
     </div>
   );
 };
+
+// Helper: cek apakah invoiceNumber mengandung /SC/
+function str_contains_sc(invoiceNumber) {
+  return typeof invoiceNumber === "string" && invoiceNumber.includes("/SC/");
+}
 
 export default CreateInvoiceForm;

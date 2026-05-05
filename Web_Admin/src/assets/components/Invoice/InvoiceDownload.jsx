@@ -13,6 +13,112 @@ import { FaGlobe, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import jsPDF        from "jspdf";
 import html2canvas  from "html2canvas";
 
+// ─── Border constants ─────────────────────────────────────────
+const BORDER_NORMAL = "0.3px solid #000000";
+const BORDER_NONE   = "none";
+
+const fixTableBorders = (el) => {
+  el.querySelectorAll("table.inv-table").forEach((tbl) => {
+    tbl.dataset.origCollapse      = tbl.style.borderCollapse;
+    tbl.dataset.origBorderSpacing = tbl.style.borderSpacing;
+    tbl.style.borderCollapse      = "separate";
+    tbl.style.borderSpacing       = "0";
+  });
+
+  el.querySelectorAll("td, th").forEach((cell) => {
+    cell.dataset.origBorder = cell.style.cssText;
+
+    const isFirst      = cell.cellIndex === 0;
+    const isHeader     = cell.tagName === "TH";
+    const isGrandRow   = cell.closest(".grand-total-row") !== null;
+    const isEmpty      = cell.classList.contains("inv-td-empty");
+    const isImgRowTd   = cell.classList.contains("inv-images-row-td");
+    const isTotalLbl   = cell.classList.contains("total-label");
+    const isGrandVal   = cell.classList.contains("grand-value");
+    const isTotalVal   = cell.classList.contains("total-value");
+    const isEmptyNo    = cell.classList.contains("inv-td-empty-no");
+    const isEmptyPlain = cell.classList.contains("inv-td-empty-plain");
+
+    cell.style.borderTop    = BORDER_NONE;
+    cell.style.borderRight  = BORDER_NONE;
+    cell.style.borderBottom = BORDER_NONE;
+    cell.style.borderLeft   = BORDER_NONE;
+
+    if (isEmpty)      return;
+    if (isEmptyPlain) return;
+
+    if (isEmptyNo) {
+      cell.style.borderLeft  = BORDER_NORMAL;
+      cell.style.borderRight = BORDER_NORMAL;
+      return;
+    }
+
+    if (isGrandRow) {
+      cell.style.borderTop    = BORDER_NONE;
+      cell.style.borderRight  = BORDER_NONE;
+      cell.style.borderBottom = BORDER_NONE;
+      cell.style.borderLeft   = BORDER_NONE;
+
+      if (isEmpty || isEmptyPlain) return;
+
+      if (isTotalLbl) {
+        cell.style.borderLeft   = BORDER_NORMAL;
+        cell.style.borderBottom = BORDER_NORMAL;
+        return;
+      }
+
+      if (isGrandVal || isTotalVal) {
+        cell.style.borderLeft   = BORDER_NORMAL;
+        cell.style.borderRight  = BORDER_NORMAL;
+        cell.style.borderBottom = BORDER_NORMAL;
+        return;
+      }
+
+      return;
+    }
+
+    if (isImgRowTd) {
+      cell.style.borderRight  = BORDER_NORMAL;
+      cell.style.borderBottom = BORDER_NORMAL;
+      if (isFirst) cell.style.borderLeft = BORDER_NORMAL;
+      return;
+    }
+
+    if (isHeader) {
+      cell.style.borderTop    = BORDER_NORMAL;
+      cell.style.borderRight  = BORDER_NORMAL;
+      cell.style.borderBottom = BORDER_NORMAL;
+      cell.style.borderLeft   = isFirst ? BORDER_NORMAL : BORDER_NONE;
+      return;
+    }
+
+    const isLastA5Row   = cell.closest(".inv-row-last-a5") !== null;
+    const isBeforeGrand = cell.closest("tr")?.nextElementSibling?.classList.contains("grand-total-row");
+    cell.style.borderRight = BORDER_NORMAL;
+    if (isFirst)        cell.style.borderLeft   = BORDER_NORMAL;
+    if (isLastA5Row)    cell.style.borderBottom = BORDER_NORMAL;
+    if (isBeforeGrand)  cell.style.borderBottom = BORDER_NORMAL;
+  });
+};
+
+const restoreTableBorders = (el) => {
+  el.querySelectorAll("table.inv-table").forEach((tbl) => {
+    if (tbl.dataset.origCollapse !== undefined) {
+      tbl.style.borderCollapse = tbl.dataset.origCollapse || "";
+      tbl.style.borderSpacing  = tbl.dataset.origBorderSpacing || "";
+      delete tbl.dataset.origCollapse;
+      delete tbl.dataset.origBorderSpacing;
+    }
+  });
+  el.querySelectorAll("td, th").forEach((cell) => {
+    if (cell.dataset.origBorder !== undefined) {
+      cell.style.cssText = cell.dataset.origBorder;
+      delete cell.dataset.origBorder;
+    }
+  });
+};
+
+
 /* ─────────────────────────────────────────────────────────────
    InvoicePageBlock  —  struktur IDENTIK dengan renderInvoiceBlock
    di InvoicePreview.jsx (wrapper .invoice-paper-scalable > .inv-a4-inner)
@@ -116,19 +222,19 @@ const InvoicePageBlock = ({
             )}
 
             {/* Total — hanya di halaman terakhir */}
-            {isLastPage && (
+{isLastPage && (
               <>
                 {shippingCost > 0 && (
                   <tr className="grand-total-row">
                     <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
-                    <td className="total-label shipping-label">Ongkos Kirim</td>
-                    <td className="total-value">{shippingCost.toLocaleString("id-ID")}</td>
+                    <td className="total-label shipping-label" style={{ borderTop: "none" }}>Ongkos Kirim</td>
+                    <td className="total-value" style={{ borderTop: "none" }}>{shippingCost.toLocaleString("id-ID")}</td>
                   </tr>
                 )}
                 <tr className="grand-total-row">
                   <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
-                  <td className="total-label grand-label">Total Tagihan</td>
-                  <td className="total-value grand-value">{grandTotal.toLocaleString("id-ID")}</td>
+                  <td className="total-label grand-label" style={{ borderTop: "none" }}>Total Tagihan</td>
+                  <td className="total-value grand-value" style={{ borderTop: "none" }}>{grandTotal.toLocaleString("id-ID")}</td>
                 </tr>
               </>
             )}
@@ -312,17 +418,17 @@ const InvoiceA5Block = ({ invoiceData, generatedNumber }) => {
               </tr>
             )}
 
-            {pShipping > 0 && (
+{pShipping > 0 && (
               <tr className="grand-total-row">
                 <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
-                <td className="total-label shipping-label">Ongkos Kirim</td>
-                <td className="total-value">{pShipping.toLocaleString("id-ID")}</td>
+                <td className="total-label shipping-label" style={{ borderTop: "none" }}>Ongkos Kirim</td>
+                <td className="total-value" style={{ borderTop: "none" }}>{pShipping.toLocaleString("id-ID")}</td>
               </tr>
             )}
             <tr className="grand-total-row">
               <td colSpan={3} style={{ border: "none", background: "transparent" }}></td>
-              <td className="total-label grand-label">Total Tagihan</td>
-              <td className="total-value grand-value">{pTotal.toLocaleString("id-ID")}</td>
+              <td className="total-label grand-label" style={{ borderTop: "none" }}>Total Tagihan</td>
+              <td className="total-value grand-value" style={{ borderTop: "none" }}>{pTotal.toLocaleString("id-ID")}</td>
             </tr>
           </tbody>
         </table>
@@ -397,14 +503,22 @@ const InvoiceDownload = () => {
   }, [id]);
 
   /* ── Generate PDF setelah DOM render ── */
-  useEffect(() => {
+useEffect(() => {
     if (status !== "rendering" || !invoiceData) return;
 
     const timer = setTimeout(async () => {
+      const allImages = Array.from(document.querySelectorAll(".dl-page img"));
+      await Promise.all(allImages.map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(resolve => {
+          img.onload  = resolve;
+          img.onerror = resolve;
+        });
+      }));
+
       setStatus("generating");
       try {
         const isA5 = invoiceData.paper_size === "a5";
-
         const pageElements = Array.from(document.querySelectorAll(".dl-page"));
         if (pageElements.length === 0) { setStatus("error"); return; }
 
@@ -413,12 +527,12 @@ const InvoiceDownload = () => {
         for (let i = 0; i < pageElements.length; i++) {
           const el = pageElements[i];
 
-          // ── Reset transform sementara supaya html2canvas dapat ukuran asli ──
           const prevTransform    = el.style.transform;
           const prevMarginBottom = el.style.marginBottom;
           el.style.transform    = "";
           el.style.marginBottom = "";
 
+          fixTableBorders(el);
           const canvas = await html2canvas(el, {
             scale:           3,
             useCORS:         true,
@@ -429,6 +543,7 @@ const InvoiceDownload = () => {
             height:          el.scrollHeight,
             windowWidth:     el.scrollWidth,
           });
+          restoreTableBorders(el);
 
           el.style.transform    = prevTransform;
           el.style.marginBottom = prevMarginBottom;
@@ -448,19 +563,18 @@ const InvoiceDownload = () => {
           pdf.addImage(imgData, "JPEG", 0, 0, pageW, pageH);
         }
 
-        /* ── Penamaan file identik InvoicePreview ── */
-        const sanitize   = (text) =>
+        const sanitize  = (text) =>
           String(text || "").replace(/[\/\\:*?"<>|]/g, "").replace(/\s+/g, "_");
-        const branch     = sanitize(invoiceData.branch);
-        const bank       = sanitize(invoiceData.bank || "BANK");
-        const invoiceNo  = (invoiceData.invoiceNumber || generatedNumber || "").split("/")[0];
-        const customer   = sanitize(invoiceData.kepada).slice(0, 30);
-        const d          = invoiceData.date ? new Date(invoiceData.date) : new Date();
-        const tanggal    = `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
-        const sizeSuffix = isA5 ? "_A5" : "_A4";
-        const ttdSuffix  = !isA5 && isSigned ? "_TTD" : "";
 
-        pdf.save(`FP_${branch}_${bank}_${invoiceNo}_${customer}_${tanggal}${ttdSuffix}${sizeSuffix}.pdf`);
+        const BULAN_ID  = ["JAN","FEB","MAR","APR","MEI","JUN","JUL","AGT","SEP","OKT","NOV","DES"];
+        const invoiceNo = (invoiceData.invoiceNumber || generatedNumber || "").split("/")[0];
+        const bulan     = invoiceData.date ? BULAN_ID[new Date(invoiceData.date).getMonth()] : "";
+        const customer  = sanitize(invoiceData.kepada).replace(/_/g, " ").slice(0, 30);
+        const branch    = sanitize(invoiceData.branch).replace(/_/g, " ");
+
+        pdf.save(`INV ${invoiceNo} ${bulan} ${customer} ${branch}.pdf`);
+
+        // ✅ TAMBAHKAN INI — ubah status ke "done" setelah PDF berhasil disimpan
         setStatus("done");
 
       } catch (err) {
@@ -470,7 +584,7 @@ const InvoiceDownload = () => {
     }, 1800);
 
     return () => clearTimeout(timer);
-  }, [status, invoiceData]);
+  }, [status, invoiceData]); // ⚠️ Tambahkan generatedNumber ke dependency array juga
 
   /* ── Status screens ── */
   const Spinner = () => (

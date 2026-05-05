@@ -76,7 +76,6 @@
   color: #0b2239;
 }
 
-/* Active states */
 .pt-paper-btn.active-all {
   background: #0b2239;
   color: #ffffff;
@@ -97,7 +96,6 @@
   box-shadow: 0 2px 8px rgba(59,130,246,0.15);
 }
 
-/* Count badge di dalam tombol */
 .pt-paper-count {
   display: inline-flex;
   align-items: center;
@@ -153,7 +151,6 @@
   font-weight: 500;
 }
 
-/* Badge di judul progress */
 .pt-progress-badge {
   font-size: 11px;
   font-weight: 700;
@@ -288,7 +285,6 @@
 
 .pt-cal-icon { color: #8aa0b4; flex-shrink: 0; }
 
-/* Hasil filter count */
 .pt-filter-result {
   margin-left: auto;
   flex-shrink: 0;
@@ -436,7 +432,7 @@
 /* ========================
    ITEM LEFT
 ======================== */
-.pt-item-left  { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.pt-item-left  { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1; }
 
 .pt-status-icon {
   width: 38px; height: 38px;
@@ -625,60 +621,6 @@
 .pt-ellipsis { color: #94a3b8; font-size: 13px; padding: 0 4px; line-height: 34px; }
 
 /* ========================
-   RESPONSIVE — TABLET
-======================== */
-@media (max-width: 1023px) {
-  .payment-page { padding: 20px 20px; }
-  .pt-progress-rate h3 { font-size: 26px; }
-  .pt-summary-card h3 { font-size: 18px; }
-  .pt-item { padding: 14px 16px 14px 20px; }
-  .pt-mark-btn { padding: 0 13px; font-size: 12px; }
-}
-
-/* ========================
-   RESPONSIVE — MOBILE
-======================== */
-@media (max-width: 767px) {
-  .payment-page { padding: 16px 14px; }
-  .pt-header-text h2 { font-size: 19px; }
-  .pt-paper-toggle { width: 100%; }
-  .pt-paper-btn { flex: 1; justify-content: center; font-size: 12px; padding: 0 10px; }
-  .pt-progress-top { flex-direction: column; gap: 8px; margin-bottom: 14px; }
-  .pt-progress-rate { display: flex; align-items: baseline; gap: 10px; text-align: left; }
-  .pt-progress-rate h3 { font-size: 24px; }
-  .pt-summary-row { gap: 8px; }
-  .pt-summary-card { padding: 12px 8px; }
-  .pt-summary-card h3 { font-size: 18px; }
-  .pt-summary-card span { font-size: 10.5px; }
-  .pt-summary-card svg { width: 16px; height: 16px; }
-  .pt-filter-left { display: none; }
-  .pt-filter-divider { display: none; }
-  .pt-filter-controls { gap: 7px; width: 100%; }
-  .pt-select-trigger { height: 35px; font-size: 12.5px; border-radius: 9px; padding: 0 9px 0 11px; }
-  .pt-item { flex-direction: column; align-items: flex-start; padding: 14px 16px 14px 20px; gap: 12px; }
-  .pt-item-left { width: 100%; }
-  .pt-item-right { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
-  .pt-item-meta { align-items: flex-start; }
-  .pt-date { white-space: normal; }
-  .pt-item-actions { align-items: flex-start; }
-  .pt-amount { font-size: 15px; }
-  .pt-filter-result { display: none; }
-}
-
-/* ========================
-   VERY SMALL — ≤ 400px
-======================== */
-@media (max-width: 400px) {
-  .pt-summary-row { gap: 6px; }
-  .pt-summary-card { padding: 10px 5px; }
-  .pt-summary-card h3 { font-size: 16px; }
-  .pt-item-right { flex-direction: column; gap: 8px; }
-  .pt-item-actions { width: 100%; }
-  .pt-mark-btn, .pt-cancel-btn { width: 100%; justify-content: center; height: 38px; }
-  .pt-select-trigger { min-width: 90px !important; font-size: 12px; padding: 0 8px 0 10px; }
-}
-
-/* ========================
    KEYBOARD ACTIVE STATE
 ======================== */
 .pt-item.kb-active {
@@ -697,4 +639,228 @@
 
 .pt-item.flash-highlight {
   animation: flashYellow 2s ease forwards;
+}
+
+/* ========================
+   RESPONSIVE — TABLET (768px – 1023px)
+======================== */
+@media (max-width: 1023px) {
+  .payment-page {
+    padding: 20px 20px;
+  }
+
+  /* Header */
+  .pt-header-text h2 { font-size: 20px; }
+
+  /* Paper toggle */
+  .pt-paper-toggle {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .pt-paper-btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 12.5px;
+    padding: 0 12px;
+  }
+
+  /* Progress card */
+  .pt-progress-card { padding: 18px 20px; }
+  .pt-progress-rate h3 { font-size: 26px; }
+  .pt-progress-rate span { font-size: 11.5px; }
+
+  /* Summary cards */
+  .pt-summary-card h3 { font-size: 20px; }
+  .pt-summary-card span { font-size: 11px; }
+
+  /* Filter */
+  .pt-filter-bar { gap: 10px; padding: 10px 14px; }
+  .pt-filter-controls { gap: 7px; }
+  .pt-select-trigger { font-size: 12.5px; padding: 0 9px 0 11px; }
+
+  /* Invoice items */
+  .pt-item { padding: 14px 16px 14px 20px; gap: 12px; }
+  .pt-inv-number { font-size: 13.5px; }
+  .pt-amount { font-size: 14px; }
+  .pt-date { font-size: 11.5px; }
+
+  /* Buttons */
+  .pt-mark-btn { padding: 0 13px; font-size: 12px; height: 34px; }
+  .pt-cancel-btn { padding: 0 12px; font-size: 11.5px; height: 32px; }
+}
+
+/* ========================
+   RESPONSIVE — MOBILE (≤ 767px)
+======================== */
+@media (max-width: 767px) {
+  .payment-page { padding: 14px 14px 24px; }
+
+  /* Header */
+  .pt-header { margin-bottom: 14px; }
+  .pt-header-text h2 { font-size: 19px; }
+  .pt-header-text p { font-size: 12.5px; }
+
+  /* Paper toggle — full width, equal cols */
+  .pt-paper-toggle {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px;
+    border-radius: 12px;
+    gap: 6px;
+  }
+  .pt-paper-btn {
+    flex: 1;
+    justify-content: center;
+    font-size: 12px;
+    padding: 0 8px;
+    height: 34px;
+    gap: 5px;
+  }
+  /* Hide label text on very narrow, keep icon + count */
+  .pt-paper-btn span:first-of-type { display: none; }
+  .pt-paper-btn .pt-paper-count { display: inline-flex; }
+
+  /* Progress card */
+  .pt-progress-card { padding: 16px 16px; border-radius: 14px; }
+  .pt-progress-top { flex-direction: column; gap: 10px; margin-bottom: 12px; }
+  .pt-progress-label h4 { font-size: 13.5px; flex-wrap: wrap; }
+  .pt-progress-rate {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    text-align: left;
+  }
+  .pt-progress-rate h3 { font-size: 28px; }
+  .pt-progress-rate span { font-size: 12px; }
+
+  /* Summary row */
+  .pt-summary-row { gap: 8px; }
+  .pt-summary-card {
+    padding: 12px 8px;
+    border-radius: 10px;
+    gap: 2px;
+  }
+  .pt-summary-card h3 { font-size: 18px; }
+  .pt-summary-card span { font-size: 10px; letter-spacing: 0.2px; }
+  .pt-summary-card svg { width: 15px; height: 15px; }
+
+  /* Filter bar */
+  .pt-filter-bar {
+    padding: 10px 12px;
+    gap: 8px;
+    border-radius: 12px;
+  }
+  .pt-filter-left  { display: none; }
+  .pt-filter-divider { display: none; }
+  .pt-filter-result { display: none; }
+  .pt-filter-controls {
+    gap: 6px;
+    width: 100%;
+  }
+  .pt-cal-icon { display: none; }
+  .pt-select-trigger {
+    height: 35px;
+    font-size: 12px;
+    border-radius: 9px;
+    padding: 0 8px 0 10px;
+    flex: 1;
+    min-width: 0 !important;
+  }
+  .pt-select-menu { min-width: 140px; }
+
+  /* Invoice items — stacked layout */
+  .pt-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 13px 14px 13px 18px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .pt-item-left { width: 100%; }
+  .pt-status-icon { width: 34px; height: 34px; border-radius: 8px; }
+
+  .pt-item-title { gap: 5px; }
+  .pt-inv-number { font-size: 13.5px; }
+  .pt-item-customer { font-size: 12px; }
+
+  /* Right section becomes a row: meta left, actions right */
+  .pt-item-right {
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .pt-item-meta { align-items: flex-start; }
+  .pt-amount { font-size: 15px; }
+  .pt-date { font-size: 11.5px; white-space: normal; line-height: 1.5; }
+
+  .pt-item-actions {
+    align-items: flex-end;
+    flex-shrink: 0;
+    gap: 6px;
+  }
+
+  .pt-late-tag { font-size: 11px; padding: 3px 8px; }
+
+  .pt-mark-btn {
+    height: 34px;
+    padding: 0 13px;
+    font-size: 12px;
+  }
+  .pt-cancel-btn {
+    height: 32px;
+    padding: 0 11px;
+    font-size: 11.5px;
+  }
+
+  /* Pagination */
+  .pt-pagination { gap: 4px; margin-top: 16px; }
+  .pt-pagination button {
+    min-width: 32px;
+    height: 32px;
+    font-size: 12.5px;
+  }
+}
+
+/* ========================
+   VERY SMALL — ≤ 430px
+======================== */
+@media (max-width: 430px) {
+  .payment-page { padding: 12px 10px 20px; }
+
+  /* Progress */
+  .pt-progress-rate h3 { font-size: 24px; }
+
+  /* Summary */
+  .pt-summary-row { gap: 6px; }
+  .pt-summary-card { padding: 10px 5px; border-radius: 9px; }
+  .pt-summary-card h3 { font-size: 16px; }
+  .pt-summary-card span { font-size: 9.5px; }
+  .pt-summary-card svg { width: 14px; height: 14px; }
+
+  /* Filter selects full row */
+  .pt-filter-controls { gap: 5px; }
+  .pt-select-trigger { min-width: 0 !important; font-size: 11.5px; padding: 0 6px 0 8px; }
+
+  /* Items */
+  .pt-item { padding: 12px 12px 12px 16px; gap: 8px; }
+  .pt-item-right { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .pt-item-actions {
+    align-items: flex-start;
+    width: 100%;
+  }
+  .pt-mark-btn,
+  .pt-cancel-btn {
+    width: 100%;
+    justify-content: center;
+    height: 38px;
+    font-size: 12.5px;
+  }
+
+  /* Pagination */
+  .pt-pagination button { min-width: 30px; height: 30px; padding: 0 6px; font-size: 12px; }
 }

@@ -30,6 +30,134 @@ const LoginLoading = () =>
     document.body
   );
 
+  /* ─────────────────────────────────────
+   Forgot Password Modal
+───────────────────────────────────── */
+function ForgotPassword({ onClose }) {
+  const [email, setEmail]       = useState("");
+  const [focused, setFocused]   = useState(false);
+  const [status, setStatus]     = useState("idle"); // idle | loading | success | error
+  const [message, setMessage]   = useState("");
+  const [visible, setVisible]   = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 10);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(onClose, 320);
+  };
+
+  const handleSubmit = async () => {
+    if (!email) {
+      setStatus("error");
+      setMessage("Email wajib diisi.");
+      return;
+    }
+
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const res = await fetch(`https://api.flowerplusofficial.com/api/forgot-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setStatus("error");
+        setMessage(result.message || "Gagal mengirim email reset.");
+        return;
+      }
+
+      setStatus("success");
+      setMessage(result.message || "Link reset password telah dikirim ke email Anda.");
+    } catch (err) {
+      console.error("Forgot password error:", err);
+      setStatus("error");
+      setMessage("Tidak dapat terhubung ke server.");
+    }
+  };
+
+  return createPortal(
+    <div className={`fp-backdrop ${visible ? "fp-visible" : ""}`} onClick={handleClose}>
+      <div
+        className={`fp-modal ${visible ? "fp-modal-in" : ""}`}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="fp-header">
+          <button className="fp-close" onClick={handleClose}>✕</button>
+        </div>
+
+        <h2 className="fp-title">Reset Password</h2>
+        <p className="fp-desc">
+          Masukkan email akun Anda. Kami akan mengirimkan link untuk mereset password.
+        </p>
+
+        {status !== "success" ? (
+          <>
+            <label className="fp-label">Email Address</label>
+            <div className={`fp-input-group ${focused ? "fp-focused" : ""}`}>
+              <Mail size={16} className="fp-ig-icon" />
+              <input
+                type="email"
+                placeholder="admin@flowerplus.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                onKeyDown={e => e.key === "Enter" && handleSubmit()}
+              />
+            </div>
+
+            {status === "error" && (
+              <div className="fp-error">{message}</div>
+            )}
+
+            <button
+              className="fp-btn"
+              onClick={handleSubmit}
+              disabled={status === "loading"}
+            >
+              {status === "loading" ? (
+                <span className="fp-btn-spinner" />
+              ) : (
+                <>
+                  <span>Kirim Link Reset</span>
+                  <ArrowRight size={15} className="fp-btn-arrow" />
+                </>
+              )}
+              <div className="btn-sheen" />
+            </button>
+          </>
+        ) : (
+          <div className="fp-success">
+            <div className="fp-success-icon">✓</div>
+            <p>{message}</p>
+            <button className="fp-back-btn" onClick={handleClose}>
+              Kembali ke Login
+            </button>
+          </div>
+        )}
+
+        <button className="fp-cancel" onClick={handleClose}>
+          Batal, kembali ke login
+        </button>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 /* ─────────────────────────────────────
    Main Login Component
 ───────────────────────────────────── */
@@ -43,6 +171,8 @@ export default function Login() {
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  //state untuk lupa password
+  const [showForgot, setShowForgot] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
@@ -63,7 +193,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch("https://api.flowerplusofficial.com/api/login", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || ""}/api/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -156,6 +286,9 @@ export default function Login() {
             {/* PASSWORD */}
             <div className="password-row">
               <label>Password</label>
+              <button type="button" className="forgot-link" onClick={() => setShowForgot(true)}>
+                Forgot password?
+              </button>
             </div>
             <div className={`input-group ${focused.pass ? "ig-focused" : ""}`}>
               <Lock size={17} className="ig-icon" />
@@ -204,6 +337,7 @@ export default function Login() {
       </div>
 
       {loading && <LoginLoading />}
+      {showForgot && <ForgotPassword onClose={() => setShowForgot(false)} />}
     </>
   );
 }

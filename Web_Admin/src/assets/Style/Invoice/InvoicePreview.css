@@ -44,6 +44,52 @@
   box-sizing: border-box;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   PATCH: Baris kosong A4 — border sesuai referensi gambar 1
+   Tambahkan snippet ini ke InvoicePreview.css (di bagian bawah file / setelah
+   rule .inv-table yang sudah ada)
+   ───────────────────────────────────────────────────────────────────────────── */
+ 
+/* Row kosong placeholder A4 — tinggi sama dengan row data biasa */
+tr.inv-row-empty-a4 {
+  height: 40px; /* sesuaikan dengan tinggi row data di CSS kamu */
+}
+ 
+/* Kolom NO pada baris kosong: hanya border kiri + kanan, TANPA atas/bawah */
+tr.inv-row-empty-a4 td.inv-td-empty-no {
+  border-left:   0.5px solid #000000;
+  border-right:  0.5px solid #000000;
+  border-top:    none;
+  border-bottom: none;
+  background:    transparent;
+}
+ 
+/* Kolom lainnya pada baris kosong: tidak ada border sama sekali */
+tr.inv-row-empty-a4 td.inv-td-empty-plain {
+  border:     none;
+  background: transparent;
+}
+ 
+/* ─── Pastikan border data row biasa konsisten ───────────────────────────────
+   Override tambahan agar border tidak bergantung hanya pada border-collapse.
+   Jika CSS kamu sudah pakai border-collapse:collapse, tambahkan ini
+   untuk row berisi data supaya preview = print = PDF */
+ 
+/* Baris data aktif (ada konten): right + bottom untuk semua td,
+   left hanya untuk td pertama (kolom NO) */
+.inv-table tbody tr:not(.inv-row-empty-a4):not(.grand-total-row):not(.inv-images-row) td {
+  border-right:  0.5px solid #000000;
+}
+ 
+.inv-table tbody tr:not(.inv-row-empty-a4):not(.grand-total-row):not(.inv-images-row) td:first-child {
+  border-left: 0.5px solid #000000;
+}
+ 
+/* Baris data pertama: tambah border atas */
+.inv-table tbody tr:not(.inv-row-empty-a4):not(.grand-total-row):not(.inv-images-row):first-child td {
+  border-top: 0.5px solid #000000;
+}
+
 /* ============================= */
 /* A4 INNER — flex column full   */
 /* ============================= */
@@ -67,19 +113,6 @@
   margin-bottom: 0;
 }
 
-/* A4: ada gambar — payment ikut konten */
-.inv-a4-inner .inv-payment-row-with-img {
-  margin-top: 24px;
-  flex-shrink: 0;
-}
-
-/* A4: tanpa gambar — payment didorong ke bawah */
-.inv-a4-inner .inv-payment-row-no-img {
-  margin-top: auto;
-  flex-shrink: 0;
-}
-
-/* fallback jika class tidak ditambahkan */
 .inv-a4-inner .inv-payment-row {
   margin-top: clamp(20px, 5%, 70px);
   flex-shrink: 0;
@@ -93,7 +126,6 @@
 
 /* ============================= */
 /* A4: BANYAK ITEM + GAMBAR      */
-/* padatkan agar muat di A4      */
 /* ============================= */
 .inv-a4-inner .inv-table td {
   padding: 6px 8px;
@@ -117,7 +149,6 @@
   width: 62px;
   height: 62px;
 }
-
 
 .inv-table tbody tr {
   border-top: none !important;
@@ -195,7 +226,7 @@
 }
 
 .inv-meta div:first-child {
-  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  border-right: 1px solid rgb(0, 0, 0);
   min-width: 190px;
 }
 
@@ -219,13 +250,13 @@
 .inv-customer h5 {
   margin: 2px 0;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 500;
   text-decoration: none;
 }
 
 .inv-customer-yth {
   font-weight: 700;
-  font-size: 15px !important;
+  font-size: 17px !important;
   text-decoration: none !important;
   -webkit-text-decoration: none !important;
   text-underline-offset: unset !important;
@@ -251,19 +282,26 @@
   background: #2f5496;
   color: white;
   padding: 10px 8px;
-  border: 1px solid #000000;
+  border: 0.5px solid #000000;
   font-size: 13px;
   font-weight: 600;
   text-align: center;
   text-decoration: none;
 }
 
+/* kolom width untuk tabel — dipakai di semua ukuran */
+.inv-col-no   { width: 6%;  }
+.inv-col-desc { width: 44%; }
+.inv-col-unit { width: 12%; }
+.inv-col-price{ width: 19%; }
+.inv-col-total{ width: 19%; }
+
 .inv-table td {
   padding: 10px 8px;
   border-top: none;
   border-bottom: none;
-  border-left: 1px solid #000000;
-  border-right: 1px solid #000000;
+  border-left: 0.5px solid #000000;
+  border-right: 0.5px solid #000000;
   font-size: 15px;
   vertical-align: top;
 }
@@ -274,7 +312,7 @@
 
 /* Border bottom baris terakhir A5 tanpa gambar */
 .inv-row-last-a5 td {
-  border-bottom: 1px solid #000000;
+  border-bottom: 0.5px solid #000000;
 }
 
 /* ============================= */
@@ -282,16 +320,17 @@
 /* ============================= */
 .inv-images-row td {
   border-top: none;
-  border-bottom: 1px solid #000000;
-  border-left: 1px solid #000000;
-  border-right: 1px solid #000000;
+  border-bottom: 0.5px solid #000000;
+  border-left: 0.5px solid #000000;
+  border-right: 0.5px solid #000000;
   padding: 10px 8px;
   vertical-align: top;
 }
 
-/* 1 gambar — 50% lebar kolom deskripsi */
+/* 1 gambar */
 .inv-img-wrap-single {
   display: flex;
+  justify-content: center;
 }
 
 .inv-img-single {
@@ -319,7 +358,7 @@
   border: 1px solid #e5e7eb;
 }
 
-/* ── A5: gambar lebih kecil ── */
+/* A5: gambar lebih kecil */
 .paper-a5 .inv-img-single {
   width: 35%;
   max-height: 80px;
@@ -330,7 +369,6 @@
   height: 60px;
 }
 
-/* A5 pair sheet juga mengikuti ukuran kecil */
 .inv-a5-pair-sheet .inv-img-single {
   width: 35%;
   max-height: 80px;
@@ -347,6 +385,13 @@
 .grand-total-row td {
   padding: 8px;
   font-size: 13px;
+  border-top: none !important; /* update */
+}
+
+/* td kosong di grand-total-row (colSpan=3) */
+.grand-total-row .inv-td-empty {
+  border: none;
+  background: transparent;
 }
 
 .total-label {
@@ -354,12 +399,16 @@
   color: white !important;
   font-weight: 600;
   text-align: center;
-  border: 1px solid #000000 !important;
+  border-top: none !important;
+  border-left: 0.3px solid #000000 !important;
+  border-right: none !important;
+  border-bottom: 0.3px solid #000000 !important;
   text-decoration: none;
 }
 
 .shipping-label {
   background: #3f5f9b !important;
+  border-bottom: 0.3px solid #000000 !important;
 }
 
 .grand-label {
@@ -371,12 +420,24 @@
   font-weight: 700 !important;
   font-size: 14px !important;
   text-align: center;
-  border: 1px solid #000000 !important;
+  border-top: none !important;
+  border-left: 0.3px solid #000000 !important;
+  border-right: 0.3px solid #000000 !important;
+  border-bottom: 0.3px solid #000000 !important;
+}
+
+/* Kolom setelah grand-value: pastikan tidak ada border kiri yang double */
+.grand-total-row td:last-child + td {
+  border-right: none !important;
 }
 
 .total-value {
   text-align: center;
   font-weight: 600;
+  border-top: none !important;
+  border-left: 0.3px solid #000000 !important;
+  border-right: 0.3px solid #000000 !important;
+  border-bottom: 0.3px solid #000000 !important;
 }
 
 /* ============================= */
@@ -391,6 +452,13 @@
   margin-bottom: 25px;
   width: 100%;
   gap: 16px;
+}
+
+/* div wrapper di PaymentInfo */
+.payment {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .pay-title {
@@ -427,6 +495,76 @@
   text-decoration: none;
 }
 
+/* Rekening ukuran kecil — untuk bank dengan 2 rekening (DJPB) */
+.pay-rekening--small {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px;
+  margin: 1px 0 0 0 !important;
+  line-height: 1.3;
+}
+
+.pay-bank-name--small {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  margin: 0 0 2px 0 !important;
+}
+
+/* A5 — sesuaikan juga ukuran small */
+.paper-a5 .pay-rekening--small,
+.inv-a5-pair-sheet .pay-rekening--small {
+  font-size: 13px !important;
+}
+
+.paper-a5 .pay-bank-name--small,
+.inv-a5-pair-sheet .pay-bank-name--small {
+  font-size: 12px !important;
+}
+
+/* ============================= */
+/* DUAL REKENING (DJPB)          */
+/* ============================= */
+.pay-dual {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.pay-dual-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.pay-dual-norek {
+  font-size: 20px;
+  font-weight: 900;
+  color: #1a3357;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pay-dual-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  white-space: nowrap;
+}
+
+/* A5 — sedikit lebih kecil */
+.paper-a5 .pay-dual-norek,
+.inv-a5-pair-sheet .pay-dual-norek {
+  font-size: 16px;
+}
+
+.paper-a5 .pay-dual-label,
+.inv-a5-pair-sheet .pay-dual-label {
+  font-size: 12px;
+}
+
 .pay-tunai {
   font-size: 22px;
   font-weight: 900;
@@ -435,32 +573,96 @@
   letter-spacing: 0.5px;
 }
 
-.inv-signature-blank {
+/* Nama penandatangan (unsigned / A5) */
+.inv-signer-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  width: 38%;
+  text-align: center;
+  margin: 0;
+  padding: 0 0 2px 0;
+  border: none;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+/* A5 signer name ukuran sedikit lebih kecil */
+.paper-a5 .inv-signer-name,
+.inv-a5-pair-sheet .inv-signer-name {
+  font-size: 14px;
+}
+
+/* ============================= */
+/* SIGNED — TTD & QRIS           */
+/* ============================= */
+.inv-signed-qris {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.inv-signed-qris-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #374151;
+  text-align: center;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.inv-signed-qris-img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+}
+
+.inv-signed-stamp {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  text-align: center;
-  padding-bottom: 2px;
 }
 
-.inv-signature-name {
-  font-size: 13px;
+.inv-stamp-wrap {
+  position: relative;
+  width: 160px;
+  height: 150px;
+}
+
+/* nama di dalam stamp wrap */
+.inv-stamp-name {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  font-size: 12px;
   color: #1f2937;
-  font-weight: 600;
+  font-weight: 500;
+  z-index: 0;
+  text-align: center;
   margin: 0;
-  padding: 0;
-  text-decoration: none;
-  border: none !important;
-  border-top: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-  align-self: center !important;
-  flex-shrink: 0;
 }
 
-.inv-signature-space {
-  border: none !important;
+.inv-stamp-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 160px;
+  object-fit: contain;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.inv-ttd-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 160px;
+  object-fit: contain;
+  z-index: 2;
 }
 
 /* ============================= */
@@ -484,6 +686,15 @@
 }
 
 /* ============================= */
+/* LOADING STATE                 */
+/* ============================= */
+.inv-loading {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* ============================= */
 /* A5 — invoice 1 item           */
 /* ============================= */
 .invoice-paper.paper-a5 {
@@ -498,7 +709,6 @@
   flex-direction: column;
 }
 
-/* Konten tengah tumbuh mengisi sisa ruang */
 .paper-a5 .inv-a5-body {
   flex: 1;
   min-height: 0;
@@ -507,31 +717,35 @@
   flex-direction: column;
 }
 
-/* A5: header logo */
 .paper-a5 .invoice-logo { width: 300px; }
 
-/* A5: meta box */
 .paper-a5 .inv-meta div { padding: 6px 12px; font-size: 11px; }
 .paper-a5 .inv-meta div:first-child { min-width: 170px; }
 
-/* A5: customer box */
 .paper-a5 .inv-customer {
   padding: 10px 16px;
   margin-top: 10px;
   margin-bottom: 10px;
 }
-.paper-a5 .inv-customer p,
-.paper-a5 .inv-customer h5,
 .paper-a5 .inv-customer-yth {
-  font-size: 15px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+  /* Reset supaya tidak ikut rule p/h5 */
+  text-decoration: none !important;
+}
+
+/* Pastikan p dan h5 di dalam customer TIDAK mengenai yth */
+.paper-a5 .inv-customer p:not(.inv-customer-yth),
+.paper-a5 .inv-customer h5:not(.inv-customer-yth) {
+  font-size: 13.5px !important;
   margin: 1px 0 !important;
 }
 
-/* A5: tabel */
 .paper-a5 .inv-table th { padding: 7px; font-size: 12px; }
 .paper-a5 .inv-table td { padding: 6px 7px; font-size: 14px; }
 
-/* A5: payment — tidak boleh grow, jangan dorong footer */
 .paper-a5 .inv-payment-row {
   margin-top: 10px;
   margin-bottom: 0;
@@ -551,27 +765,33 @@
   margin-bottom: 4px;
 }
 
-.paper-a5 .inv-payment-row-tunai .name-tunai {
-  align-self: center;
-  padding-top: 8px;
-}
-
 .paper-a5 .pay-title,
 .paper-a5 .pay-transfer { font-size: 15px; }
 .paper-a5 .pay-rekening { font-size: 25px; margin: 2px 0 3px 0; }
 .paper-a5 .pay-bank-name { font-size: 15px; }
 .paper-a5 .pay-tunai { font-size: 18px; margin: 4px 0 2px 0; }
 
-/* A5: footer — selalu di paling bawah */
 .paper-a5 .inv-footer {
   margin-top: auto;
-  padding-top: 0px;
+  padding-top: 0;
   padding-bottom: 18px;
   font-size: 15px;
   gap: 32px;
   flex-shrink: 0;
 }
 .paper-a5 .inv-footer div svg { width: 15px; height: 15px; }
+
+/* baris item A5 */
+.paper-a5 .inv-table tbody tr:not(.grand-total-row) td {
+  height: 90px;
+  vertical-align: top;
+}
+
+/* teks deskripsi A5 rata tengah */
+.paper-a5 .inv-table td:nth-child(2) {
+  text-align: center;
+  vertical-align: middle;
+}
 
 /* ============================= */
 /* A5 SHEET PREVIEW (single)     */
@@ -597,14 +817,26 @@
 /* ============================= */
 /* A5 PAIR SHEET (2 inv A5)      */
 /* ============================= */
+.inv-a5-pair-sheet {
+  width: 210mm;
+  min-width: 210mm;
+  background: #fff;
+  margin: 0 auto 20px auto;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.12),
+    0 4px 16px rgba(0,0,0,0.10),
+    0 8px 32px rgba(0,0,0,0.08);
+}
+
 .inv-a5-pair-sheet .invoice-paper.paper-a5 {
   margin: 0;
   box-shadow: none;
 }
-.inv-a5-pair-sheet .paper-a5-top  { border-bottom: none; }
+
+.inv-a5-pair-sheet .paper-a5-top    { border-bottom: none; }
 .inv-a5-pair-sheet .paper-a5-bottom { border-top: none; }
 
-/* Garis potong di preview */
+/* Garis potong */
 .inv-cut-line {
   width: 100%;
   border-top: 1.5px dashed #c4c4c4;
@@ -627,30 +859,6 @@
 }
 
 /* ============================= */
-/* SIGNED — TTD & QRIS           */
-/* ============================= */
-.inv-signed-qris {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.inv-signed-stamp {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.inv-stamp-wrap {
-  position: relative;
-  width: 160px;
-  height: 150px;
-}
-
-/* ============================= */
 /* ACTION — BADGES               */
 /* ============================= */
 .ia-badges {
@@ -659,6 +867,7 @@
   gap: 8px;
   flex-wrap: wrap;
 }
+
 .ia-badge {
   font-size: 12px;
   font-weight: 600;
@@ -666,6 +875,7 @@
   border-radius: 999px;
   white-space: nowrap;
 }
+
 .ia-badge-a5   { background: #fef3c7; color: #92400e; }
 .ia-badge-a4   { background: #dbeafe; color: #1e40af; }
 .ia-badge-page { background: #f3f4f6; color: #374151; }
@@ -676,6 +886,7 @@
   align-items: center;
   gap: 6px;
 }
+
 .ia-badge-remove {
   background: none;
   border: none;
@@ -688,7 +899,6 @@
 }
 .ia-badge-remove:hover { opacity: 1; }
 
-/* Pair Print button (aktif) */
 .ia-btn-paired {
   background: #ecfdf5 !important;
   color: #065f46 !important;

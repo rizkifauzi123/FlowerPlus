@@ -236,7 +236,7 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   display: grid;
   grid-template-columns: 2.4fr 0.75fr 1.1fr 1fr 36px;
   gap: 10px;
-  align-items: center;
+  align-items: start;
   margin-bottom: 10px;
   padding: 10px 12px;
   background: #fafbfc;
@@ -251,7 +251,9 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
 }
 
 
-/* Upload */
+/* =============================================================
+   UPLOAD & IMAGE PREVIEW
+   ============================================================= */
 
 .ci-upload-wrapper {
   display: flex;
@@ -293,16 +295,52 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   width: 38px;
   height: 38px;
   flex-shrink: 0;
-  overflow: hidden;
+  overflow: visible; /* biarkan delete btn muncul di luar */
   background: #f0f4f8;
   border: 1.5px solid #dbe3ef;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   transition: border-color 0.18s;
+  position: relative;
 }
 
 .ci-image-preview:hover { border-color: #1e3a5f; }
-.ci-image-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+.ci-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Tombol hapus gambar — muncul di pojok kanan atas thumbnail */
+.ci-image-delete {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  z-index: 10;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ef4444;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  transition: background 0.15s, transform 0.15s;
+}
+
+.ci-image-delete:hover {
+  background: #dc2626;
+  transform: scale(1.12);
+}
+
+.ci-image-delete:active { transform: scale(0.96); }
 
 .ci-remove-btn {
   display: flex;
@@ -362,6 +400,7 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   padding: 22px 28px;
   background: linear-gradient(135deg, #0f1f2e 0%, #1e3a5f 100%);
   border-radius: 14px;
+  gap: 24px;
 }
 
 .ci-total-box::before {
@@ -403,6 +442,42 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   font-family: 'Courier New', monospace;
   color: #ffffff;
   letter-spacing: -0.5px;
+}
+
+.ci-total-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.ci-total-line {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ci-sub-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  min-width: 100px;
+}
+
+.ci-sub-value {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Courier New', monospace;
+}
+
+.ci-total-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -573,11 +648,11 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   color: #1e3a5f;
 }
 
+
 /* =============================================================
-   TAMBAHKAN DI AKHIR CreateInvoice.css
+   SHIPPING ROW
    ============================================================= */
 
-/* ── Ongkos Kirim Row ── */
 .ci-shipping-row {
   display: flex;
   align-items: center;
@@ -626,49 +701,13 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   text-align: right;
 }
 
-/* ── Total Box — update untuk breakdown ── */
-.ci-total-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-}
 
-.ci-total-breakdown {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+/* =============================================================
+   INVOICE PREVIEW ROWS
+   ============================================================= */
 
-.ci-total-line {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.ci-sub-label {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  min-width: 100px;
-}
-
-.ci-sub-value {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
-  font-family: 'Courier New', monospace;
-}
-
-.ci-total-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-/* ── Invoice Preview — Ongkos Kirim rows ── */
 .shipping-label {
-  background: #5a7fa8 !important; /* sedikit lebih terang dari header biru */
+  background: #5a7fa8 !important;
   font-weight: 500 !important;
 }
 
@@ -682,7 +721,11 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   font-size: 15px !important;
 }
 
-/* ── Deskripsi textarea ── */
+
+/* =============================================================
+   TEXTAREA DESKRIPSI
+   ============================================================= */
+
 .ci-desc-textarea {
   resize: vertical;
   min-height: 60px;
@@ -690,37 +733,48 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
   line-height: 1.55;
   padding: 9px 14px;
   font-size: 13px;
-  white-space: pre-wrap;   /* agar baris baru tampil */
+  white-space: pre-wrap;
   overflow-y: auto;
   vertical-align: top;
-  align-self: start;       /* supaya tidak stretch di grid */
-}
-
-/* ci-item-row: biarkan textarea menentukan tinggi row */
-.ci-item-row {
-  align-items: start;
+  align-self: start;
 }
 
 
 /* =============================================================
-   RESPONSIVE
+   RESPONSIVE — TABLET (≤ 900px)
    ============================================================= */
 
 @media (max-width: 900px) {
   .ci-meta-grid { grid-template-columns: 1fr 1fr; }
 }
 
+
+/* =============================================================
+   RESPONSIVE — TABLET (≤ 768px)
+   ============================================================= */
+
 @media (max-width: 768px) {
   .ci-overlay { padding: 20px 12px 40px; }
-  .ci-header  { padding: 20px 24px; }
-  .ci-body    { padding: 22px 24px; }
-  .ci-footer  { padding: 16px 24px; }
+  .ci-header  { padding: 18px 20px; gap: 12px; }
+  .ci-body    { padding: 20px 20px; }
+  .ci-footer  { padding: 16px 20px; }
 
-  .ci-meta-grid { grid-template-columns: 1fr 1fr; }
+  /* Header: sembunyikan subtitle kecil agar lebih ringkas */
+  .ci-header-title p { display: none; }
+
+  /* Meta grid: 2 kolom, date full width */
+  .ci-meta-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
   .ci-meta-grid .ci-field:first-child { grid-column: 1 / -1; }
 
+  /* Sembunyikan header kolom item — label ada di placeholder input */
   .ci-items-header { display: none; }
 
+  /* Item row: 2 kolom — desc full, lalu qty & price berdampingan,
+     upload full width, remove di pojok kanan atas */
   .ci-item-row {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
@@ -729,26 +783,84 @@ select.ci-input option { color: #0f1f2e; background: #fff; }
     background: #f8fafc;
     border: 1.5px solid #e8edf2;
     border-radius: 12px;
+    position: relative;
   }
 
-  .ci-item-row > *:first-child { grid-column: 1 / -1; }
-  .ci-item-row .ci-remove-btn  { grid-column: 2; grid-row: 1; justify-self: end; align-self: start; margin-top: -4px; }
-  .ci-upload-wrapper            { grid-column: 1 / -1; }
+  /* Textarea desc: kolom penuh */
+  .ci-item-row > .ci-desc-textarea { grid-column: 1 / -1; }
 
+  /* Qty & Price: masing-masing 1 kolom — placeholder sudah jelasin konteks */
+  .ci-qty-input  { grid-column: 1; }
+  .ci-price-input { grid-column: 2; }
+
+  /* Upload: kolom penuh */
+  .ci-upload-wrapper { grid-column: 1 / -1; }
+
+  /* Remove btn: pojok kanan atas, absolut */
+  .ci-item-row .ci-remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+  }
+
+  /* Total box */
+  .ci-total-box { padding: 18px 20px; }
   .ci-total-box .amount { font-size: 20px; }
+
+  /* Shipping */
+  .ci-shipping-input { width: 140px !important; }
 }
 
+
+/* =============================================================
+   RESPONSIVE — MOBILE (≤ 480px)
+   ============================================================= */
+
 @media (max-width: 480px) {
+  .ci-overlay { padding: 0 0 40px; }
+  .ci-card    { border-radius: 0; box-shadow: none; border: none; }
+
+  .ci-header  { padding: 16px 16px; }
+  .ci-body    { padding: 18px 16px; }
+  .ci-footer  { padding: 14px 16px; }
+
+  .ci-header-icon { width: 36px; height: 36px; border-radius: 9px; }
+  .ci-header-title h2 { font-size: 15px; }
+
+  /* Meta grid: 1 kolom penuh */
   .ci-meta-grid { grid-template-columns: 1fr; }
   .ci-meta-grid .ci-field:first-child { grid-column: 1; }
 
-  .ci-item-row { grid-template-columns: 1fr; }
-  .ci-item-row .ci-remove-btn { grid-column: 1; grid-row: auto; justify-self: start; }
+  /* Item row: 1 kolom, qty & price berdampingan di row sendiri */
+  .ci-item-row {
+    grid-template-columns: 1fr 1fr;
+    padding: 12px;
+  }
+  .ci-item-row > .ci-desc-textarea { grid-column: 1 / -1; }
+  .ci-qty-input   { grid-column: 1; }
+  .ci-price-input { grid-column: 2; }
+  .ci-upload-wrapper { grid-column: 1 / -1; }
 
+  /* Footer: susun vertikal, tombol full width */
   .ci-footer { flex-direction: column-reverse; }
   .ci-btn-cancel,
   .ci-btn-create { width: 100%; justify-content: center; }
 
-  .ci-total-box { flex-direction: column; align-items: flex-start; gap: 6px; }
+  /* Total box: susun vertikal */
+  .ci-total-box {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+  }
   .ci-total-box .amount { font-size: 22px; }
+  .ci-total-right { align-items: flex-start; }
+
+  /* Shipping: baris vertikal */
+  .ci-shipping-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .ci-shipping-input-wrap { width: 100%; }
+  .ci-shipping-input { width: 100% !important; }
 }

@@ -2,20 +2,49 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
-
     RewriteEngine On
 
-    # Handle Authorization Header
+    # Handle CORS preflight OPTIONS request
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+
+    # CORS untuk localhost:5173
+    RewriteCond %{HTTP:Origin} ^http://localhost:5173$ [NC]
+    RewriteRule .* - [E=CORS_ORIGIN:http://localhost:5173]
+
+    # CORS untuk localhost:5174
+    RewriteCond %{HTTP:Origin} ^http://localhost:5174$ [NC]
+    RewriteRule .* - [E=CORS_ORIGIN:http://localhost:5174]
+
+    # CORS untuk localhost:3000
+    RewriteCond %{HTTP:Origin} ^http://localhost:3000$ [NC]
+    RewriteRule .* - [E=CORS_ORIGIN:http://localhost:3000]
+
+    # CORS untuk production
+    RewriteCond %{HTTP:Origin} ^https://admin\.flowerplusofficial\.com$ [NC]
+    RewriteRule .* - [E=CORS_ORIGIN:https://admin.flowerplusofficial.com]
+
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    Header always set Access-Control-Allow-Credentials "true"
+    Header always set Vary "Origin"
+
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+        Header always set Access-Control-Allow-Origin "%{CORS_ORIGIN}e" env=CORS_ORIGIN
+        Header always set Vary "Origin"
+    </FilesMatch>
 </IfModule>

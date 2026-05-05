@@ -5,9 +5,15 @@ export const BANK_INFO = {
   "BRI":             { norek: "1767 0100 0402 566",           label: "BRI a.n Miskam",                 isCash: false },
   "BCA":             { norek: "5311108108",                   label: "BCA a.n Dede Syarifah",          isCash: false },
   "BNI":             { norek: "129 0400 452",                 label: "BNI a.n Dede Syarifah",          isCash: false },
-  "BSI":             { norek: "70651 4970",                   label: "BSI a.n Miskam",                 isCash: false },
+  "BSI":             { norek: "70651 49700",                   label: "BSI a.n Miskam",                 isCash: false },
   "BTN":             { norek: "0024901500088281",             label: "BANK BTN a.n Dede Syarifah",     isCash: false },
   "Bank Maluku Malut": { norek: "1603008581",                 label: "BANK MALUKU MALUT a.n Miskam",   isCash: false },
+   // ← Ganti placeholder di bawah dengan data asli
+  "DJPB":              {
+    norek:  "1180010229705",   label:  "BANK MANDIRI a.n Dede Syarifah",
+    norek2: "176 01000402566",   label2: "BRI a.n Miskam",
+    isCash: false,
+  },
   "Tunai":           { norek: null,                           label: "PEMBAYARAN TUNAI",               isCash: true  },
 };
 

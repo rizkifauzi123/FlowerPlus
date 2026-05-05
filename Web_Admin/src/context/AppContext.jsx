@@ -2,14 +2,13 @@ import { createContext, useContext, useState, useMemo, useEffect } from "react";
 
 const AppContext = createContext();
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export const AppProvider = ({ children }) => {
 
   const [invoices, setInvoices] = useState([]);
   const [admins, setAdmins] = useState([]);
 
-  /* ============================
-     FILTER STATE — tidak reset saat pindah halaman
-  ============================ */
   const [ptFilter, setPtFilter] = useState({
     status: "Semua Status",
     month:  "Semua Bulan",
@@ -29,9 +28,6 @@ export const AppProvider = ({ children }) => {
     paperSize: "all",
   });
 
-  /* ============================
-     USER STATE
-  ============================ */
   const savedUser = JSON.parse(localStorage.getItem("user"));
 
   const [user, setUser] = useState(
@@ -50,20 +46,43 @@ export const AppProvider = ({ children }) => {
   /* ============================
      FETCH INVOICES FROM API
   ============================ */
-  const refreshInvoices = () => {
-    fetch("https://api.flowerplusofficial.com/api/invoices")
-      .then(res => res.json())
-      .then(data => {
-        // Sort by updated_at descending — invoice terbaru/teredit di atas
-        const sorted = [...data].sort((a, b) => {
-          const dateA = new Date(a.updated_at || a.created_at || 0);
-          const dateB = new Date(b.updated_at || b.created_at || 0);
-          return dateB - dateA;
-        });
-        setInvoices(sorted);
-      })
-      .catch(err => console.error("Error fetching invoices:", err));
-  };
+const refreshInvoices = async () => {
+  try {
+    const res = await fetch(`${API_URL}/api/invoices`);
+    if (!res.ok) throw new Error("Fetch failed");
+
+    const data = await res.json();
+
+    // 🔥 pastikan selalu array
+    let list = [];
+
+    if (Array.isArray(data)) {
+      list = data;
+    } else if (Array.isArray(data.data)) {
+      list = data.data;
+    } else {
+      console.warn("Unexpected invoice format:", data);
+      list = [];
+    }
+
+    // 🔥 sorting terbaru di atas
+    const sorted = list.sort((a, b) => {
+      const dateA = new Date(a.updated_at || a.created_at || 0);
+      const dateB = new Date(b.updated_at || b.created_at || 0);
+      return dateB - dateA;
+    });
+
+    // ✅ TARO DI SINI
+    console.log("Invoices updated:", sorted);
+
+    setInvoices(sorted);
+
+    return sorted;
+  } catch (err) {
+    console.error("Error fetching invoices:", err);
+    throw err;
+  }
+};
 
   useEffect(() => {
     refreshInvoices();
@@ -73,7 +92,7 @@ export const AppProvider = ({ children }) => {
      FETCH ADMINS FROM API
   ============================ */
   useEffect(() => {
-    fetch("https://api.flowerplusofficial.com/api/users")
+    fetch(`${API_URL}/api/users`)
       .then(res => res.json())
       .then(data => setAdmins(data))
       .catch(err => console.error("Error fetching users:", err));
@@ -85,7 +104,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     if (!user.id) return;
 
-    fetch(`https://api.flowerplusofficial.com/api/users/${user.id}`)
+    fetch(`${API_URL}/api/users/${user.id}`)
       .then(res => res.json())
       .then(data => {
         setUser(prev => ({
@@ -140,7 +159,6 @@ export const AppProvider = ({ children }) => {
         setUser,
         focusedInvoiceId,
         setFocusedInvoiceId,
-        // ✅ filter state
         ptFilter,    setPtFilter,
         raFilter,    setRaFilter,
         dashFilter,  setDashFilter,

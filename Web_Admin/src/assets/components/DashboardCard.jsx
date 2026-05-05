@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import {
   FileText,
   Wallet,
@@ -7,6 +7,9 @@ import {
   Printer,
   Send,
   TrendingUp,
+  ChevronDown,
+  Calendar,
+  Check,
 } from "lucide-react";
 
 import {
@@ -24,6 +27,78 @@ import {
 import "../Style/DashboardCard.css";
 import { useApp } from "../../context/AppContext";
 
+// ─── Konstanta bulan & tahun ──────────────────────────────────────────────────
+
+const BULAN = [
+  { value: "01", label: "Januari"   },
+  { value: "02", label: "Februari"  },
+  { value: "03", label: "Maret"     },
+  { value: "04", label: "April"     },
+  { value: "05", label: "Mei"       },
+  { value: "06", label: "Juni"      },
+  { value: "07", label: "Juli"      },
+  { value: "08", label: "Agustus"   },
+  { value: "09", label: "September" },
+  { value: "10", label: "Oktober"   },
+  { value: "11", label: "November"  },
+  { value: "12", label: "Desember"  },
+];
+
+// ─── Dropdown kustom ──────────────────────────────────────────────────────────
+
+const FilterDropdown = ({ value, options, onChange, placeholder, icon: Icon }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const selected = options.find(o => o.value === value);
+
+  useEffect(() => {
+    const handleOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
+
+  return (
+    <div className="dash-filter-dropdown" ref={ref}>
+      <button
+        type="button"
+        className={`dash-filter-trigger ${open ? "open" : ""} ${value ? "active" : ""}`}
+        onClick={() => setOpen(p => !p)}
+      >
+        {Icon && <Icon size={13} className="dash-filter-icon" />}
+        <span>{selected ? selected.label : placeholder}</span>
+        <ChevronDown size={12} className={`dash-filter-chevron ${open ? "rotated" : ""}`} />
+      </button>
+      {open && (
+        <div className="dash-filter-menu">
+          <button
+            type="button"
+            className={`dash-filter-option ${!value ? "selected" : ""}`}
+            onClick={() => { onChange(""); setOpen(false); }}
+          >
+            <span>{placeholder}</span>
+            {!value && <Check size={12} className="dash-filter-check" />}
+          </button>
+          {options.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`dash-filter-option ${value === opt.value ? "selected" : ""}`}
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+            >
+              <span>{opt.label}</span>
+              {value === opt.value && <Check size={12} className="dash-filter-check" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
 const DashboardCards = () => {
   const { invoices, user, dashFilter, setDashFilter } = useApp();
   const currentYear = new Date().getFullYear();
@@ -33,6 +108,15 @@ const DashboardCards = () => {
   const selectedPaper   = dashFilter.paperSize ?? "all";
   const setSelectedYear  = (v) => setDashFilter(prev => ({ ...prev, year: v }));
   const setSelectedPaper = (v) => setDashFilter(prev => ({ ...prev, paperSize: v }));
+
+  // ─── State filter bulan & tahun card ─────────────────────────────────────
+  const [filterBulan, setFilterBulan] = useState("");
+  const [filterTahun, setFilterTahun] = useState(String(currentYear));
+
+  const tahunOptions = Array.from({ length: 6 }, (_, i) => ({
+    value: String(currentYear + i),
+    label: String(currentYear + i),
+  }));
 
   const greetings = [
     "Semoga harimu menyenangkan dan penuh produktivitas ✨",
@@ -68,7 +152,7 @@ const DashboardCards = () => {
     return "unpaid";
   };
 
-  /* ── Filter by paper size ── */
+  /* ── Filter by paper size (tidak berubah) ── */
   const filteredInvoices = useMemo(() => {
     if (selectedPaper === "all") return invoices;
     return invoices.filter(inv => (inv.paper_size ?? "a4") === selectedPaper);
@@ -77,29 +161,48 @@ const DashboardCards = () => {
   const a5Count = invoices.filter(inv => (inv.paper_size ?? "a4") === "a5").length;
   const a4Count = invoices.filter(inv => (inv.paper_size ?? "a4") === "a4").length;
 
-  /* ── Stat values ── */
-  const totalInvoice = filteredInvoices.length;
+  /* ── Filter tambahan: bulan & tahun untuk CARD stats ── */
+  const filteredByPeriod = useMemo(() => {
+    return filteredInvoices.filter(inv => {
+      if (!inv.date) return false;
+      const d = new Date(inv.date);
+      const matchTahun = filterTahun ? String(d.getFullYear()) === filterTahun : true;
+      const matchBulan = filterBulan ? String(d.getMonth() + 1).padStart(2, "0") === filterBulan : true;
+      return matchTahun && matchBulan;
+    });
+  }, [filteredInvoices, filterBulan, filterTahun]);
 
-  const totalPaid = filteredInvoices
+  /* ── Label periode aktif ── */
+  const periodeLabel = useMemo(() => {
+    const bulanLabel = filterBulan ? BULAN.find(b => b.value === filterBulan)?.label : null;
+    if (bulanLabel && filterTahun) return `${bulanLabel} ${filterTahun}`;
+    if (bulanLabel) return bulanLabel;
+    if (filterTahun) return `Tahun ${filterTahun}`;
+    return "Semua Periode";
+  }, [filterBulan, filterTahun]);
+
+  /* ── Stat values ── */
+  const totalInvoice = filteredByPeriod.length;
+
+  const totalPaid = filteredByPeriod
     .filter(inv => getComputedStatus(inv) === "paid")
     .reduce((acc, inv) => acc + parseAmount(inv.amount), 0);
 
-  const totalOutstanding = filteredInvoices
+  const totalOutstanding = filteredByPeriod
     .filter(inv => getComputedStatus(inv) !== "paid")
     .reduce((acc, inv) => acc + parseAmount(inv.amount), 0);
 
-  /* ── Card baru: total nominal semua invoice apapun statusnya ── */
-  const totalKeseluruhan = filteredInvoices.reduce(
+  const totalKeseluruhan = filteredByPeriod.reduce(
     (acc, inv) => acc + parseAmount(inv.amount), 0
   );
 
   const totalCustomer = new Set(
-    filteredInvoices.map(inv => inv.kepada || inv.customer)
+    filteredByPeriod.map(inv => inv.kepada || inv.customer)
   ).size;
 
-  const paidCount    = filteredInvoices.filter(inv => getComputedStatus(inv) === "paid").length;
-  const overdueCount = filteredInvoices.filter(inv => getComputedStatus(inv) === "overdue").length;
-  const unpaidCount  = filteredInvoices.filter(inv => getComputedStatus(inv) === "unpaid").length;
+  const paidCount    = filteredByPeriod.filter(inv => getComputedStatus(inv) === "paid").length;
+  const overdueCount = filteredByPeriod.filter(inv => getComputedStatus(inv) === "overdue").length;
+  const unpaidCount  = filteredByPeriod.filter(inv => getComputedStatus(inv) === "unpaid").length;
 
   const paymentData = [
     { name: "Lunas",      value: paidCount,    color: "#3a87a8" },
@@ -194,13 +297,45 @@ const DashboardCards = () => {
         </button>
       </div>
 
-      {/* STAT CARDS — baris 1: Total Keseluruhan full-width, baris 2: 4 kartu sejajar */}
+      {/* ── FILTER PERIODE ── */}
+      <div className="dash-period-filter">
+        <div className="dash-period-left">
+          <Calendar size={14} className="dash-period-icon" />
+          <span className="dash-period-title">Periode</span>
+          <span className="dash-period-label">{periodeLabel}</span>
+        </div>
+        <div className="dash-period-controls">
+          <FilterDropdown
+            value={filterBulan}
+            options={BULAN}
+            onChange={setFilterBulan}
+            placeholder="Semua Bulan"
+            icon={Calendar}
+          />
+          <FilterDropdown
+            value={filterTahun}
+            options={tahunOptions}
+            onChange={setFilterTahun}
+            placeholder="Semua Tahun"
+          />
+          {(filterBulan || filterTahun) && (
+            <button
+              className="dash-period-reset"
+              onClick={() => { setFilterBulan(""); setFilterTahun(""); }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* STAT CARDS */}
       <div className="dashboard-cards">
 
         {/* 1. Total Keseluruhan — full width */}
         <div className="card navy card-full">
           <div>
-            <p className="card-title">Total Keseluruhan</p>
+            <p className="card-title">Total Keseluruhan · {periodeLabel}</p>
             <h2>Rp {totalKeseluruhan.toLocaleString("id-ID")}</h2>
             <p className="card-subtitle">Seluruh nilai transaksi invoice</p>
           </div>
@@ -312,7 +447,7 @@ const DashboardCards = () => {
                   </span>
                 )}
               </h3>
-              <p>Distribusi status invoice</p>
+              <p>Distribusi status invoice · {periodeLabel}</p>
             </div>
           </div>
 
